@@ -1,0 +1,64 @@
+Step 1. npm init -y
+step 2 npm i epxress
+Step 3 npm i -D nodemon
+Step 4. Change the from "main": "index.js", to "main": "server.js" from package.json
+Step 5. within the package add the line under script with "start":"node server", and "dev": "nodemon server"
+"scripts": {
+"test": "echo \"Error: no test specified\" && exit 1",
+"start":"node server",
+"dev": "nodemon server"
+},
+
+step 6. Change the "name": "project_start_pack" if you want.
+Step 7. create server.js and start coding.
+step 8. Method to link up with MongoDB
+
+1. Method one edited package.json scripts
+   "scripts": {
+   "test": "echo \"Error: no test specified\" && exit 1",
+   "start": "node --env-file=.env server",
+   "dev": "nodemon --env-file=.env server"
+   },
+
+2. Other method add in
+   install "npm i dotenv" in the terminal console.
+
+install mongoose
+npm install mongoose
+
+Add the following import on top of ur script:
+require("dotenv").config();
+
+Step 9. Next step install npm i mongoose
+create new folder -> src -> db -> db.js
+
+Step 10. JWT lesson
+npm i jsonwebtoken uuid bcrypt
+
+step 11. npm i cors helmet express-rate-limit
+
+
+##########################################################################################
+Step 12. npm i -D mocha chai@4 chai-http
+
+Step 13.Configuration for Mocha Setup
+
+locate package.json and made changes on script
+"scripts": {
+"test": "mocha --watch",
+"start": "node --env-file=.env server",
+"dev": "nodemon --env-file=.env server"
+},
+
+create .mocharc.json configuration setting. perfrom testing on specific watch-file.
+{
+"diff": true,
+"extension": ["js", "cjs", "mjs"],
+"package": "./package.json",
+"reporter": "spec",
+"slow": "75",
+"timeout": "2000",
+"ui": "bdd",
+"watch-files": ["./test/*.js"],
+"watch-ignore": ["lib/vendor"]
+}
