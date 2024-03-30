@@ -2,18 +2,19 @@ const mongoose = require("mongoose");
 
 const AuthSchema = new mongoose.Schema(
   {
+    //userID are refer to User _id
     userID: {
       // Primary key & Foreign Key
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: "User",
       required: true,
       unique: true,
     },
-    username: {
+    userNAME: {
       type: String,
       required: true,
     },
-    hash: {
+    userHASH: {
       type: String,
       required: true,
     },
