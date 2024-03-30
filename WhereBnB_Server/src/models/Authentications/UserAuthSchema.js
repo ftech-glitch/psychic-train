@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const AuthSchema = new mongoose.Schema(
+const userAuthSchema = new mongoose.Schema(
   {
     //userID are refer to User _id
     userID: {
@@ -28,4 +28,4 @@ const AuthSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Authentication", AuthSchema);
+module.exports = mongoose.model("Authentication", userAuthSchema);

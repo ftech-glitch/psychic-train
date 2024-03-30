@@ -16,5 +16,4 @@ const userReviewSchema = new Schema(
   }
 );
 
-const UserReview = mongoose.model("Review", userReviewSchema);
-module.exports = UserReview;
+module.exports = mongoose.model("Review", userReviewSchema);

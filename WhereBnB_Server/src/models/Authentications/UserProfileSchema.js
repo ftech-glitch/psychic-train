@@ -22,6 +22,4 @@ const userProfileSchema = new mongoose.Schema(
   }
 );
 
-const UserProfile = mongoose.model("UserProfile", userProfileSchema);
-
-module.exports = UserProfile;
+module.exports = mongoose.model("UserProfile", userProfileSchema);
