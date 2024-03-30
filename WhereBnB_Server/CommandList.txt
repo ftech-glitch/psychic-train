@@ -1,4 +1,4 @@
-Step 1. npm init -y
+Step 1 npm init -y
 step 2 npm i epxress
 Step 3 npm i -D nodemon
 Step 4. Change the from "main": "index.js", to "main": "server.js" from package.json
