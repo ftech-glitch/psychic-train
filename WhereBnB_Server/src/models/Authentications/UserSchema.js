@@ -28,6 +28,11 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       required: true,
     },
+    loginDATE: {
+      type: Date,
+      required: false,
+      default: Date.now,
+    },
   },
   {
     collection: "User",

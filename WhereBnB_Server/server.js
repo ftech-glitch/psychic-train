@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const app = express();
 const brewerysAPI = require("./src/routers/routeAPI");
+const authAPI = require("./src/routers/routeAUTH");
+
 // Apply Helmet to secure your app by setting various HTTP headers
 app.use(helmet());
 
@@ -26,11 +28,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const connectDB = require("./src/connections/database");
-const SeedDB = require("./src/connections/seedDatabase");
-// Attempt to connect to the database
-connectDB("brewery"); // Initiating the connection
-//SeedDB();
+connectDB(); // Initiating the connection
+
 app.use("/api", brewerysAPI);
+app.use("/auth", authAPI);
+
+//Capture json format error
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status == 400 && "body" in err) {
+    console.error(err);
+    return res
+      .status(400)
+      .json({ status: "error", msg: "an error has occurred" });
+  }
+});
 
 // Listen on a port specified in the .env or default to 5001
 const PORT = process.env.PORT || 5001;

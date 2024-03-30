@@ -12,9 +12,11 @@ const userProfileSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
+      required: false,
     },
     profilePICTURE: {
       type: String, // Store only base64 encoded image
+      required: false,
     },
   },
   {
