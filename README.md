@@ -9,7 +9,7 @@ Note: We should keep the package.json files separate (i.e. frontend has its own 
 
 ```bash
 psychic-train
-├── backend
+├── (WhereBnB_Server) backend
 ├── frontend
 └── node_modules
 ```
