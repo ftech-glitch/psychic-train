@@ -38,6 +38,6 @@ router.patch("/brewery/:id", authAdmin, patchBrewery);
 
 /*####################### API 05 ##############################################*/
 // Delete base on req.params.id
-router.delete("/bewery/:id", authAdmin, deleteBrewery);
+router.delete("/brewery/:id", deleteBrewery);
 
 module.exports = router;

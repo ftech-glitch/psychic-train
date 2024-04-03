@@ -49,22 +49,27 @@ const createBrewery = async (req, res) => {
 
 //Update the brewery base on ID
 const patchBrewery = async (req, res) => {
-  const response = await Brewery.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    type: req.body.type,
-    city: req.body.city,
-    state: req.body.state,
-    address: req.body.address,
-    postal: req.body.postal,
-    contact: req.body.contact,
-    website: req.body.website,
-  });
-  if (response.ok) {
-    console.log("Successfully Update the Brewery From Databse");
-    res.json({ status: "Success", msg: `Brewery Updated ${response}` });
-    return;
+  try {
+    const response = await Brewery.findByIdAndUpdate(req.params.id, {
+      name: req.body.name,
+      type: req.body.type,
+      city: req.body.city,
+      state: req.body.state,
+      address: req.body.address,
+      postal: req.body.postal,
+      contact: req.body.contact,
+      website: req.body.website,
+    });
+    if (response) {
+      console.log("Successfully Updated the Brewery From Database");
+      res.json({ status: "Success", msg: `Brewery Updated ${response}` });
+    } else {
+      res.status(404).json({ status: "error", msg: "Brewery not found" });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ status: "error", msg: "Error updating brewery" });
   }
-  res.json({ status: "Unable to Update", msg: `Brewery Updated ${response}` });
 };
 
 //Remove a Brewery from the Database base on id
