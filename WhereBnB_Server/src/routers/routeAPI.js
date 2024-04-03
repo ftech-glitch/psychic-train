@@ -19,7 +19,7 @@ router.get("/brewery", authUser, getBrewery);
 router.post("/brewery", authUser, postBrewery);
 
 /*####################### API 03 ##############################################*/
-//Upload New Brewery send a rawy body :
+//Upload New Brewery send a raw body :
 /* {
     name: req.body.name,
     type: req.body.type,
