@@ -39,7 +39,7 @@ const createBrewery = async (req, res) => {
 
     res.json({
       status: "Success",
-      msg: "Brewery Added into Database ",
+      msg: "Brewery Added into Database",
     });
   } catch (error) {
     console.log(error.message);
