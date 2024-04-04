@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -10,6 +10,9 @@ import { Link } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import Login from './Login';
 import SignUp from './SignUp';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import UserProfile from './UserProfile';
 
 function Copyright(props) {
     return (
@@ -33,22 +36,33 @@ const Sidebar = (props) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, marginTop: 6, bgcolor: 'white' }}>
-                        <img src={glass} width={"30px"} height={"30px"}></img>
-                    </Avatar>
-                    <Grid>
-                        {props.accessTokenLength === 0 && props.showLogin && <Login theme={props.theme} setShowLogin={props.setShowLogin}></Login>}
-                    </Grid>
-
-                    <Grid>
-                        {props.accessTokenLength === 0 && !props.showLogin && <SignUp theme={props.theme} setShowLogin={props.setShowLogin}></SignUp>}
-                    </Grid>
-                    <Copyright sx={{ mt: 5 }} />
+                    {props.accessTokenLength === 0 && props.showLogin && (
+                        <>
+                            <Avatar sx={{ m: 1, marginTop: 6, bgcolor: 'white' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Grid>
+                                <Login theme={props.theme} setShowLogin={props.setShowLogin}></Login>
+                            </Grid></>
+                    )}
+                    {props.accessTokenLength === 0 && !props.showLogin && (
+                        <>
+                            <Avatar sx={{ m: 1, marginTop: 6, bgcolor: 'white' }}>
+                                <AppRegistrationIcon />
+                            </Avatar>
+                            <Grid>
+                                <SignUp theme={props.theme} setShowLogin={props.setShowLogin}></SignUp>
+                            </Grid>
+                        </>
+                    )}
+                    {props.accessTokenLength !== 0 && !props.showLogin && (
+                        <UserProfile theme={props.theme} setShowLogin={props.setShowLogin}></UserProfile>
+                    )}
                 </Box>
 
 
             </Container>
-        </ThemeProvider>
+        </ThemeProvider >
     );
 };
 

@@ -1,22 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import { jwtDecode } from "jwt-decode";
 
-// import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 
 import glass from "./glass.png";
 
@@ -34,18 +29,31 @@ function Copyright(props) {
 const Login = (props) => {
     const fetchData = useFetch();
     const userCtx = useContext(UserContext);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+
+    const usernameRef = useRef('');
+    const passwordRef = useRef('');
+    // const [userProfile, setUserProfile] = useState({});
 
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const res = await fetchData("/auth/login", "POST", { username: email, password: password });
+        const res = await fetchData("/auth/login", "POST", { username: usernameRef.current.value, password: passwordRef.current.value });
 
         if (res.ok) {
             userCtx.setAccessToken(res.data.access);
             const decoded = jwtDecode(res.data.access);
             userCtx.setRole(decoded.role);
+
+            // const profile = await fetchData("/auth/users/userprofile", "POST", { username: usernameRef.current.value }, userCtx.accessToken);
+            const profile = await fetchData("/auth/users/userprofile", "POST", { username: usernameRef.current.value });
+
+            if (profile.ok) {
+                userCtx.setUserProfile(profile.data)
+                // setUserProfile(profile.data);
+            } else {
+                alert(JSON.stringify(profile.data));
+                console.log(profile.data);
+            }
         } else {
             alert(JSON.stringify(res.data));
         }
@@ -75,7 +83,7 @@ const Login = (props) => {
                             label="Username"
                             name="username"
                             autoComplete="username"
-                            onChange={(e) => { setEmail(e.target.value) }}
+                            inputRef={usernameRef}
                             autoFocus
                         />
                         <TextField
@@ -86,7 +94,7 @@ const Login = (props) => {
                             label="Password"
                             type="password"
                             id="password"
-                            onChange={(e) => { setPassword(e.target.value) }}
+                            inputRef={passwordRef}
                             autoComplete="current-password"
                         />
                         <Button
