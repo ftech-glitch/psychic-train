@@ -6,18 +6,28 @@ const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
 
-const getAllUsers = async (req, res) => {
+const getAllUser = async (req, res) => {
   try {
-    const users = await AuthModel.find();
-    const outputArray = users.map((user) => ({
-      email: user.email,
-      role: user.role,
-    }));
+    // Fetch all users
+    const users = await User.find();
 
-    res.json(outputArray);
+    const userDetailsPromises = users.map(async (user) => {
+      const userProfile = await Profile.findOne({ userID: user._id });
+      const userAuth = await Auth.findOne({ userID: user._id });
+
+      return {
+        userInfo: user,
+        userProfile,
+        userAuth,
+      };
+    });
+
+    const userDetails = await Promise.all(userDetailsPromises);
+
+    console.log(userDetails);
+    res.json(userDetails);
   } catch (error) {
-    console.error(error.message);
-    res.status(400).json({ status: "error", msg: "error getting users" });
+    console.error("Error fetching all user details:", error);
   }
 };
 
@@ -122,4 +132,4 @@ const refresh = (req, res) => {
   }
 };
 
-module.exports = { register, login, refresh };
+module.exports = { register, login, refresh, getAllUser };
