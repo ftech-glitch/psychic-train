@@ -29,6 +29,22 @@ const OverLay = (props) => {
 
   // update brewery
   const handleSaveChanges = async () => {
+    const res = await fetchData(
+      "/api/brewery" + id,
+      "PATCH",
+      {
+        name: name.current.value,
+        type: type.current.value,
+        city: city.current.value,
+        state: province.current.value,
+        address: address.current.value,
+        postal: postal.current.value,
+        contact: contact.current.value,
+        website: website.current.value,
+      }
+    )
+
+
     try {
       const response = await fetch(
         `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201`,
