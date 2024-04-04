@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import DetailsModal from "./DetailsModal";
 
 const Search = (props) => {
@@ -10,28 +10,33 @@ const Search = (props) => {
   const [selectedBrewery, setSelectedBrewery] = useState(null);
   const [editMode, setEditMode] = useState(false);
 
-  // search for breweries by name in airtable
-  const searchAirtableData = async (query) => {
-    const airtableAPI = `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201?filterByFormula=SEARCH("${query}", {Name})&maxRecords=1000&view=Grid%20view`;
-    const headers = {
-      Authorization: `Bearer patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675`,
-      "Content-Type": "application/json",
-    };
-
-    try {
-      const response = await fetch(airtableAPI, { headers });
-      const data = await response.json();
-      return data.records;
-    } catch (error) {
-      console.error("Error searching data from Airtable:", error);
-      return [];
-    }
-  };
+  const nameRef = useRef("");
+  const typeRef = useRef("");
+  const addressRef = useRef("");
+  const postalRef = useRef("");
+  const cityRef = useRef("");
+  const provinceRef = useRef("");
+  const contactRef = useRef("");
+  const websiteRef = useRef("");
 
   // search for breweries by name
-  const getBreweries = async () => {
+  const searchBreweries = async () => {
     setLoading(true);
-    const query = encodeURIComponent(input);
+    const res = await fetchData(
+      "/api/brewery",
+      "POST",
+      {
+        name: nameRef.current.value,
+      },
+      userCtx.accessToken
+    );
+
+    if (res.ok) {
+      props.getBreweries();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
 
     if (!input) {
       // if no input is provided, clear the breweries and set empty result to true
@@ -39,32 +44,6 @@ const Search = (props) => {
       setEmptyResult(true);
       setLoading(false);
       return;
-    }
-
-    try {
-      const airtableData = await searchAirtableData(query);
-
-      if (airtableData.length < 1) {
-        setEmptyResult(true);
-      } else {
-        setEmptyResult(false);
-      }
-      const transformedAirtableData = airtableData.map((record) => ({
-        id: record.id,
-        name: record.fields.Name,
-        city: record.fields.City,
-        state: record.fields.State,
-        brewery_type: record.fields.Type,
-        street: record.fields.Address,
-        postal_code: record.fields.Postal,
-        phone: record.fields.Contact,
-        website_url: record.fields.Website,
-      }));
-      setBreweries(transformedAirtableData);
-    } catch (error) {
-      console.error("Error fetching brewery data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -146,7 +125,7 @@ const Search = (props) => {
               type="button"
               id="button-addon1"
               data-ripple-color="dark"
-              onClick={getBreweries}
+              onClick={searchBreweries}
             >
               SEARCH
             </button>
@@ -179,75 +158,3 @@ const Search = (props) => {
 };
 
 export default Search;
-
-// ------------------------ adding data from open brewery list to airtable ------------------------ //
-// before adding a new record, fetch existing records from airtable to check if the record already exists
-// const checkForDuplicate = async (brewery) => {
-//   const url = `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201?filterByFormula=AND({Name} = '${brewery.name}', {City} = '${brewery.city}')`;
-
-//   const response = await fetch(url, {
-//     method: "GET",
-//     headers: {
-//       Authorization: `Bearer patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675`,
-//       "Content-Type": "application/json",
-//     },
-//   });
-
-//   const data = await response.json();
-//   return data.records.length > 0;
-// };
-
-// post & match brewery and airtable fields
-// const postBreweryToAirtable = async (brewery) => {
-//   const isDuplicate = await checkForDuplicate(brewery);
-//   if (isDuplicate) {
-//     console.log(`Duplicate brewery found: ${brewery.name}`);
-//     return; // skip adding if a duplicate is found
-//   }
-//   const url = `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201`;
-
-//   const response = await fetch(url, {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675`,
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       fields: {
-//         Name: brewery.name,
-//         Type: brewery.brewery_type,
-//         City: brewery.city,
-//         State: brewery.state_province,
-//         Address: brewery.street,
-//         Postal: brewery.postal_code,
-//         Contact: brewery.phone,
-//         Website: brewery.website_url,
-//       },
-//     }),
-//   });
-
-//   if (!response.ok) {
-//     throw new Error(
-//       `Failed to post brewery to Airtable: ${response.statusText}`
-//     );
-//   }
-
-//   return response.json();
-// };
-
-// add all breweries to airtable
-// const addBreweriesToAirtable = async () => {
-//   for (const brewery of allBreweries) {
-//     try {
-//       await postBreweryToAirtable(brewery);
-//       console.log(`Added brewery: ${brewery.name}`);
-//     } catch (error) {
-//       console.error(`Error adding brewery: ${error.message}`);
-//     }
-//   }
-// };
-
-// automatically add all breweries to airtable after fetching
-// useEffect(() => {
-//   if (!loading && !hasMore) addBreweriesToAirtable();
-// }, [loading, hasMore]);

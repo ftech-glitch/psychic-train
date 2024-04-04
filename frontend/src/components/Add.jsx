@@ -1,59 +1,44 @@
-import React, { useState } from "react";
+import React, { useRef, useFetch, useContext } from "react";
+import UserContext from "../context/user";
 
 const Add = () => {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [address, setAddress] = useState("");
-  const [postal, setPostal] = useState("");
-  const [city, setCity] = useState("");
-  const [province, setProvince] = useState("");
-  const [contact, setContact] = useState("");
-  const [website, setWebsite] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const fetchData = useFetch();
+  const userCtx = useContext(UserContext);
 
-  // add new brewery to airtable
+  const nameRef = useRef("");
+  const typeRef = useRef("");
+  const addressRef = useRef("");
+  const postalRef = useRef("");
+  const cityRef = useRef("");
+  const provinceRef = useRef("");
+  const contactRef = useRef("");
+  const websiteRef = useRef("");
+
+  // add new brewery
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const airtableAPI =
-      "https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201";
-    const apiKey =
-      "patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675";
-    const headers = {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    };
-    const data = {
-      fields: {
-        Name: name,
-        Type: type,
-        City: city,
-        State: province,
-        Address: address,
-        Postal: postal,
-        Contact: contact,
-        Website: website,
+    const res = await fetchData(
+      "api/brewery",
+      "PUT",
+      {
+        name: nameRef.current.value,
+        type: typeRef.current.value,
+        city: cityRef.current.value,
+        state: provinceRef.current.value,
+        address: addressRef.current.value,
+        postal: postalRef.current.value,
+        contact: contactRef.current.value,
+        website: websiteRef.current.value,
       },
-    };
+      userCtx.accessToken
+    );
 
-    try {
-      const response = await fetch(airtableAPI, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      console.log(result);
-      setName("");
-      setType("");
-      setAddress("");
-      setPostal("");
-      setCity("");
-      setProvince("");
-      setContact("");
-      setWebsite("");
-      setShowSuccess(true);
-    } catch (error) {
-      console.error(error);
+    if (res.ok) {
+      getBreweries();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
 
