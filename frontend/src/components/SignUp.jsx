@@ -5,12 +5,15 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -36,23 +39,41 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp(props) {
-    // const fetchData = useFetch();
-    // const [username, setUsername] = useState("");
-    // const [password, setPassword] = useState("");
-    // const [email, setEmail] = useState("");
-    // const [bio, setBio] = useState("");
-    // const [gender, setGender] = useState('other');
-    // const [profile, setProfile] = useState('placeholder');
     const fetchData = useFetch();
     const usernameRef = useRef('');
     const passwordRef = useRef('');
     const emailRef = useRef('');
     const bioRef = useRef('');
-    // const genderRef = useRef('other');
+    const [profilePic, setProfilePic] = useState('');
     const [gender, setGender] = useState('');
+
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
+
+    const handleFileUpload = () => {
+        let reader = new FileReader();
+
+        reader.onload = function () {
+            const base64String = reader.result;
+            setProfilePic(base64String);
+        };
+
+        reader.onerror = function (error) {
+            console.error("Error reading file:", error);
+        };
+
+        reader.readAsDataURL(selectedFile);
+    };
+
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        // handleFileUpload();
 
         const outgoingData = {
             username: usernameRef.current.value,
@@ -64,6 +85,10 @@ export default function SignUp(props) {
         if (bioRef.current.value) {
             outgoingData.bio = bioRef.current.value;
         }
+
+        // if (profilePic) {
+        //     outgoingData.profile = profilePic;
+        // }
 
         const res = await fetchData("/auth/register", "PUT", outgoingData);
 
@@ -154,6 +179,26 @@ export default function SignUp(props) {
                                             <FormControlLabel value="non-binary" control={<Radio />} label="Non-binary" />
                                             <FormControlLabel value="other" control={<Radio />} label="Other" />
                                         </RadioGroup>
+                                        <TextField
+                                            value={selectedFile ? selectedFile.name : ''}
+                                            label="Upload Profile Picture"
+                                            InputProps={{
+                                                readOnly: true,
+                                                startAdornment: (
+                                                    <IconButton component="label">
+                                                        <AttachFileIcon />
+                                                        <input
+                                                            type="file"
+                                                            hidden
+                                                            onChange={handleFileChange}
+                                                        />
+                                                    </IconButton>
+                                                ),
+                                            }}
+                                        />
+                                        {/* <Button variant="contained" color="primary" startIcon={<FileUploadIcon />} onClick={handleFileUpload}>
+                                            Upload
+                                        </Button> */}
                                     </FormControl>
                                 </Grid>
                             </Grid>
@@ -179,7 +224,7 @@ export default function SignUp(props) {
                     <Copyright sx={{ mt: 5 }} />
 
                 </Container>
-            </ThemeProvider>
+            </ThemeProvider >
             {/* <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 
             </Grid> */}

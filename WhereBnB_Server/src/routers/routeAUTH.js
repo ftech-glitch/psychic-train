@@ -6,6 +6,8 @@ const {
   getAllUser,
   deleteUser,
   updateUserProfile,
+  getUser,
+  getUserProfile,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 /* const {
@@ -20,8 +22,9 @@ const router = express.Router();
 router.put("/register", register);
 router.post("/login", login);
 router.post("/refresh", refresh);
-router.get("/users", authAdmin, getAllUser);
+router.get("/users", getAllUser);
 router.post("/users", authAdmin, deleteUser);
 router.post("/users/profile", authUser || authAdmin, updateUserProfile);
+router.post("/users/userprofile", getUserProfile);
 
 module.exports = router;

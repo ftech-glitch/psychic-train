@@ -14,12 +14,11 @@ function App() {
   const [accessToken, setAccessToken] = useState("");
   const [role, setRole] = useState("");
   const [showLogin, setShowLogin] = useState(true);
+  const [userProfile, setUserProfile] = useState({});
 
   return (
     <>
-      <UserContext.Provider
-        value={{ accessToken, setAccessToken, role, setRole }}
-      >
+      <UserContext.Provider value={{ accessToken, setAccessToken, role, setRole, userProfile, setUserProfile }}>
         <NavBar></NavBar>
         {accessToken.length > 0 && (
           <Routes>
