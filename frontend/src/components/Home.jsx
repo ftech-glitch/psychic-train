@@ -3,15 +3,36 @@ import { Link } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
 import glass from "./glass.png";
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Sidebar from "./Sidebar";
 
-const Home = () => {
+const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [allBreweries, setAllBreweries] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
+  const defaultTheme = createTheme();
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#90caf9',
+      },
+      secondary: {
+        main: '#ffcc80',
+      },
+    },
+  });
   // fetch brewery list
   useEffect(() => {
     const fetchBreweries = async () => {
@@ -29,7 +50,10 @@ const Home = () => {
       setLoading(false);
     };
 
-    fetchBreweries();
+    // Check if the current page is different from the previous page
+    if (page > 1) {
+      fetchBreweries();
+    }
   }, [page]);
 
   // generate a random brewery from brewery list
@@ -117,66 +141,93 @@ const Home = () => {
 
   return (
     <>
-      <br />
-      <div className="image-container">
-        <img src={cheers} alt="cheers" className="cheers" />
-      </div>
-      <br />
-      <br />
-      <h1 className="header">Discover Your Next HopSpot</h1>
-      <h5 className="subheader">Connecting beer enthusiasts with breweries</h5>
-      <br />
-      <br />
-      {/* buttons */}
-      <div className="d-flex justify-content-center">
-        <div className="col-md-3">
-          <button
-            className="btn btn-dark"
-            type="button"
-            id="button-addon1"
-            data-ripple-color="dark"
-            onClick={getRandomBrewery}
+      <ThemeProvider theme={darkTheme}>
+
+        <Grid container component="main" sx={{ height: '100vh' }}>
+
+          <CssBaseline />
+          <Box
+            sx={{
+              margin: '1rem',
+              display: 'grid',
+              gridTemplateColumns: "70% 30%",
+              alignItems: 'start',
+              justifyContent: 'center'
+            }}
           >
-            Generate a random brewery
-          </button>
-        </div>
-        <div className="col-md-3">
-          <Link to="/search" className="btn btn-dark" role="button">
-            Search for breweries
-          </Link>
-        </div>
-      </div>
-      <br />
-      <br />
+            <Grid container item xs={12} justifyContent="center" spacing={2}>
+              <Grid item xs={12} sx={{ margin: "2rem" }}>
+                <img src={cheers} alt="cheers" style={{ width: '200px', height: '200px' }} />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="h2" className="header">Discover Your Next HopSpot</Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="h5" className="subheader">Connecting beer enthusiasts with breweries</Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={getRandomBrewery}
+                >
+                  Generate a random brewery
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button href="/search" variant="contained" color="primary" role="button">
+                  Search for breweries
+                </Button>
+              </Grid>
+            </Grid>
+
+            <Grid container item sx={{
+              "height": "100%",
+            }}>
+              <Grid item>
+                <Sidebar accessTokenLength={props.accessTokenLength} showLogin={props.showLogin} setShowLogin={props.setShowLogin} theme={darkTheme}></Sidebar>
+              </Grid>
+
+            </Grid>
+          </Box>
+        </Grid>
+
+
+      </ThemeProvider>
+
       {/* random brewery modal */}
       {randomBrewery && showModal && (
         <div className={styles.backdrop}>
           <div className={styles.modal}>
             <div className="row align-items-center">
               <div className="col-md-3 text-center">
-                <img src={glass} alt="glass" className="glass" />
+                <img src={glass} alt="glass" className="glass" style={{ width: '100px', height: '100px' }} />
               </div>
               <div className="col-md-6 text-center">
-                <h5 className="random-brewery">Your Brewery of the Day </h5>
+                <Typography variant="h5" className="random-brewery">Your Brewery of the Day </Typography>
               </div>
               <div className="col-md-3 text-center">
-                <img src={glass} alt="glass" className="glass" />
+                <img src={glass} alt="glass" className="glass" style={{ width: '100px', height: '100px' }} />
               </div>
             </div>
             <br />
-            <p className="modal-text">Name: {randomBrewery.name}</p>
+            <Typography variant="body1" className="modal-text">Name: {randomBrewery.name}</Typography>
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}
             {renderWebsite()}
             <div className={styles.buttonGroup}>
-              <button className={styles.modalButton} onClick={handleCloseModal}>
+              <Button variant="contained" color="primary" className={styles.modalButton} onClick={handleCloseModal}>
                 close
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
+
+
     </>
   );
 };

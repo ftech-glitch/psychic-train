@@ -24,8 +24,7 @@ function App() {
           <Route path="add" element={<Add />} />
           <Route path="search" element={<Search />} />
         </Routes>}
-        {accessToken.length === 0 && showLogin && <Login setShowLogin={setShowLogin}></Login>}
-        {accessToken.length === 0 && !showLogin && <SignUp setShowLogin={setShowLogin}></SignUp>}
+        <Home accessTokenLength={accessToken.length} showLogin={showLogin} setShowLogin={setShowLogin}></Home>
       </UserContext.Provider>
 
     </>

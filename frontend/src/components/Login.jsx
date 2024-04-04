@@ -30,7 +30,6 @@ function Copyright(props) {
     );
 }
 
-const defaultTheme = createTheme();
 
 const Login = (props) => {
     const fetchData = useFetch();
@@ -53,20 +52,17 @@ const Login = (props) => {
     };
 
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={props.theme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 2,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'white' }}>
-                        <img src={glass} width={"30px"} height={"30px"}></img>
-                    </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
