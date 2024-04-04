@@ -46,7 +46,7 @@ Run frontend
 npm run dev:frontend
 ```
 
-Run backend
+Run WhereBnB_Server
 
 ```
 npm run dev:backend
