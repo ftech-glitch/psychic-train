@@ -1,19 +1,20 @@
-import React, { useRef, useFetch, useContext } from "react";
+import React, { useContext, useState } from "react";
 import UserContext from "../context/user";
+import useFetch from "../hooks/useFetch";
 
 const Add = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
 
-  const nameRef = useRef("");
-  const typeRef = useRef("");
-  const addressRef = useRef("");
-  const postalRef = useRef("");
-  const cityRef = useRef("");
-  const provinceRef = useRef("");
-  const contactRef = useRef("");
-  const websiteRef = useRef("");
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [address, setAddress] = useState("");
+  const [postal, setPostal] = useState("");
+  const [city, setCity] = useState("");
+  const [province, setProvince] = useState("");
+  const [contact, setContact] = useState("");
+  const [website, setWebsite] = useState("");
 
   // add new brewery
   const handleSubmit = async (e) => {
@@ -22,14 +23,14 @@ const Add = () => {
       "api/brewery",
       "PUT",
       {
-        name: nameRef.current.value,
-        type: typeRef.current.value,
-        city: cityRef.current.value,
-        state: provinceRef.current.value,
-        address: addressRef.current.value,
-        postal: postalRef.current.value,
-        contact: contactRef.current.value,
-        website: websiteRef.current.value,
+        name: name,
+        type: type,
+        city: city,
+        state: province,
+        address: address,
+        postal: postal,
+        contact: contact,
+        website: website,
       },
       userCtx.accessToken
     );
@@ -57,10 +58,9 @@ const Add = () => {
           <label className="col-md-2">Name:</label>
           <input
             type="text"
-            placeholder="name"
             aria-label="Search"
             className="col-md-3"
-            value={name}
+            placeholder="name"
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -69,10 +69,9 @@ const Add = () => {
           <label className="col-md-2">Type:</label>
           <input
             type="text"
-            placeholder="type"
             aria-label="Search"
             className="col-md-3"
-            value={type}
+            placeholder="type"
             onChange={(e) => setType(e.target.value)}
           />
         </div>
@@ -81,10 +80,9 @@ const Add = () => {
           <label className="col-md-2">City:</label>
           <input
             type="text"
-            placeholder="city"
             aria-label="Search"
             className="col-md-3"
-            value={city}
+            placeholder="city"
             onChange={(e) => setCity(e.target.value)}
           />
         </div>
@@ -96,7 +94,6 @@ const Add = () => {
             placeholder="state"
             aria-label="Search"
             className="col-md-3"
-            value={province}
             onChange={(e) => setProvince(e.target.value)}
           />
         </div>
@@ -105,10 +102,9 @@ const Add = () => {
           <label className="col-md-2">Address:</label>
           <input
             type="text"
-            placeholder="address"
             aria-label="Search"
             className="col-md-3"
-            value={address}
+            placeholder="address"
             onChange={(e) => setAddress(e.target.value)}
           />
         </div>
@@ -117,10 +113,9 @@ const Add = () => {
           <label className="col-md-2">Postal Code:</label>
           <input
             type="text"
-            placeholder="postal code"
             aria-label="Search"
             className="col-md-3"
-            value={postal}
+            placeholder="postal code"
             onChange={(e) => setPostal(e.target.value)}
           />
         </div>
@@ -129,10 +124,9 @@ const Add = () => {
           <label className="col-md-2">Contact:</label>
           <input
             type="text"
-            placeholder="contact"
             aria-label="Search"
             className="col-md-3"
-            value={contact}
+            placeholder="contact"
             onChange={(e) => setContact(e.target.value)}
           />
         </div>
@@ -141,10 +135,9 @@ const Add = () => {
           <label className="col-md-2">Website:</label>
           <input
             type="text"
-            placeholder="website"
             aria-label="Search"
             className="col-md-3"
-            value={website}
+            placeholder="website"
             onChange={(e) => setWebsite(e.target.value)}
           />
         </div>
