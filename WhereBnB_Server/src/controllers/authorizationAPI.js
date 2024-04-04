@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-
+const mongoose = require("mongoose");
 const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
@@ -64,29 +64,27 @@ const deleteUser = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    // Find base on username
-    console.log("received ", req.body.username);
+    // Fetch all users
     const users = await User.find({ userNAME: req.body.username });
-    console.log("find user ", users);
-    const response = await Profile.findOneAndUpdate(
-      { userID: users._id }, // Correctly reference the user's ID
-      { profilePICTURE: req.body.profilepicture }, // Update operation
-      { new: true } // Return the updated document
-    );
-    if (response.ok) {
-      console.log("Successfully Update the profile Pictrure From Databse");
-      res.json({
-        status: "Success",
-        msg: `profile Pictrure Updated ${users.userNAME}`,
-      });
-      return;
-    }
+
+    const userDetailsPromises = users.map(async (user) => {
+      const userProfile = await Profile.findOneAndUpdate(
+        { userID: user._id },
+        { $set: { profilePICTURE: req.body.picture } },
+        { new: true }
+      );
+      return {
+        userProfile,
+      };
+    });
+
+    const userDetails = await Promise.all(userDetailsPromises);
     res.json({
-      status: "Unable to Update porile picture",
-      msg: `Unable to Updated ${users.userNAME} profile picture`,
+      status: "ok",
+      msg: `User Profile has been updated: ${userDetails}`,
     });
   } catch (error) {
-    console.error("Error updating user profile:", error);
+    console.error("Error updateUserProfile user details:", error);
   }
 };
 

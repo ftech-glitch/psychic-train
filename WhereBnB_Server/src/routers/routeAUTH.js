@@ -22,6 +22,6 @@ router.post("/login", login);
 router.post("/refresh", refresh);
 router.get("/users", authAdmin, getAllUser);
 router.post("/users", authAdmin, deleteUser);
-router.post("/users/profile", authAdmin, updateUserProfile);
+router.post("/users/profile", authUser || authAdmin, updateUserProfile);
 
 module.exports = router;
