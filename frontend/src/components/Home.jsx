@@ -44,6 +44,7 @@ const Home = (props) => {
     fetchBreweries();
   }, []);
 
+
   // fetch brewery list
   const fetchBreweries = async () => {
     const res = await fetchData(
@@ -240,7 +241,7 @@ const Home = (props) => {
               </div>
             </div>
             <br />
-            {renderName()}
+{renderName()}
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}
