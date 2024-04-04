@@ -14,6 +14,7 @@ import Sidebar from "./Sidebar";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import Search from "./Search";
+import RateAndReview from "./RateAndReview";
 
 const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
@@ -138,7 +139,14 @@ const Home = (props) => {
     return <p className="modal-text">Website: -</p>;
   };
 
-  <Search fetchBreweries={fetchBreweries}></Search>;
+  <Search fetchBreweries={fetchBreweries} />;
+
+  <RateAndReview
+    fetchBreweries={fetchBreweries}
+    breweries={breweries}
+    setBreweries={setBreweries}
+    allBreweries={allBreweries}
+  />;
 
   return (
     <>
