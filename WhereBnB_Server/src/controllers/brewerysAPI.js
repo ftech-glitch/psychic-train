@@ -14,7 +14,6 @@ const postBrewery = async (req, res) => {
 
 //create new Brewery and add into database
 const createBrewery = async (req, res) => {
-  console.log("Current at createBrewery");
   const createBrewery = new Brewery({
     name: req.body.name,
     type: req.body.type,

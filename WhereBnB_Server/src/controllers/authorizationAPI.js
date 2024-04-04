@@ -53,7 +53,6 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  console.log("Current at Login");
   try {
     const user = await User.findOne({ userNAME: req.body.username });
     if (!user) {
@@ -71,7 +70,6 @@ const login = async (req, res) => {
       username: auth.userNAME,
       userrole: user.userROLE,
     };
-    console.log("claims:", claims);
     const access = jwt.sign(claims, process.env.ACCESS_SECRET, {
       expiresIn: "20m",
       jwtid: uuidv4(),
@@ -91,7 +89,6 @@ const login = async (req, res) => {
 
 const refresh = (req, res) => {
   try {
-    console.log("Current At Post Refresh");
     const decoded = jwt.verify(req.body.refresh, process.env.REFRESH_SECRET);
     console.log(decoded);
     const claims = {

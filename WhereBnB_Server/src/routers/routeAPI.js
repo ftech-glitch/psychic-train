@@ -21,15 +21,16 @@ router.post("/brewery", authUser, postBrewery);
 /*####################### API 03 ##############################################*/
 //Upload New Brewery send a raw body :
 /* {
-    name: req.body.name,
-    type: req.body.type,
-    city: req.body.city,
-    state: req.body.state,
-    address: req.body.address,
-    postal: req.body.postal,
-    contact: req.body.contact,
-    website: req.body.website,
-  } */
+    "name": "test",
+    "type": "test",
+    "city": "test",
+    "state": "test",
+    "address": "test",
+    "postal": "test",
+    "contact": "test",
+    "website": "test"
+  }
+  */
 router.put("/brewery", authAdmin, createBrewery);
 
 /*####################### API 04 ##############################################*/
