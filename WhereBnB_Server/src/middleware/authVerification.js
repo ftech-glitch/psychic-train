@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const authUser = (req, res, next) => {
+  console.log("authUser");
   if (!("authorization" in req.headers)) {
     return res.status(400).json({
       status: "error",
@@ -27,6 +28,7 @@ const authUser = (req, res, next) => {
 };
 
 const authAdmin = (req, res, next) => {
+  console.log("Current at authAdmin");
   if (!("authorization" in req.headers)) {
     return res.status(400).json({ status: "error", msg: "no token found" });
   }
@@ -35,8 +37,8 @@ const authAdmin = (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
-
-      if (decoded.role === "admin") {
+      console.log(decoded);
+      if (decoded.userrole === "admin") {
         req.decoded = decoded;
         next();
       } else {
