@@ -39,10 +39,11 @@ const Home = (props) => {
     },
   });
 
-  // // fetch brewery list when component mounts
-  // useEffect(() => {
-  //   fetchBreweries();
-  // }, []);
+  // fetch brewery list when component mounts
+  useEffect(() => {
+    fetchBreweries();
+  }, []);
+
 
   // fetch brewery list
   const fetchBreweries = async () => {
@@ -75,42 +76,33 @@ const Home = (props) => {
     setShowModal(false);
   };
 
-  // format phone number
-  const formatNumber = (phoneStr) => {
-    let cleaned = ("", phoneStr).replace(/\D/g, "");
-
-    let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-
-    if (match) {
-      return "(" + match[1] + ") " + match[2] + "-" + match[3];
+  // handle name fuction
+  const renderName = () => {
+    if (randomBrewery.Name) {
+      return <p className="modal-text">Name: {randomBrewery.Name}</p>;
     }
-
-    return null;
+    return <p className="modal-text">Name: -</p>;
   };
 
   // handle phone function
   const renderPhoneNumber = () => {
-    if (randomBrewery.phone) {
-      return (
-        <p className="modal-text">
-          Phone: {formatNumber(randomBrewery.contact)}
-        </p>
-      );
+    if (randomBrewery.Contact) {
+      return <p className="modal-text">Phone: {randomBrewery.Contact}</p>;
     }
     return <p className="modal-text">Phone: -</p>;
   };
 
   // handle type function
   const renderType = () => {
-    if (randomBrewery.brewery_type) {
-      return <p className="modal-text">Type: {randomBrewery.brewery_type}</p>;
+    if (randomBrewery.Type) {
+      return <p className="modal-text">Type: {randomBrewery.Type}</p>;
     }
     return <p className="modal-text">Type: -</p>;
   };
 
   // handle address function
   const renderAddress = () => {
-    if (randomBrewery.street && randomBrewery.postal_code) {
+    if (randomBrewery.Address && randomBrewery.Postal) {
       return (
         <p className="modal-text">
           Address:{" "}
@@ -119,7 +111,7 @@ const Home = (props) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {randomBrewery.street}, {randomBrewery.postal_code}
+            {randomBrewery.Address}, {randomBrewery.Postal}
           </a>
         </p>
       );
@@ -129,16 +121,16 @@ const Home = (props) => {
 
   // handle website function
   const renderWebsite = () => {
-    if (randomBrewery.website_url) {
+    if (randomBrewery.Website) {
       return (
         <p className="modal-text">
           Website:{" "}
           <a
-            href={randomBrewery.website_url}
+            href={randomBrewery.Website}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {randomBrewery.website_url}
+            {randomBrewery.Website}
           </a>
         </p>
       );
@@ -249,9 +241,7 @@ const Home = (props) => {
               </div>
             </div>
             <br />
-            <Typography variant="body1" className="modal-text">
-              Name: {randomBrewery.name}
-            </Typography>
+{renderName()}
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}
