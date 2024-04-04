@@ -170,6 +170,36 @@ const login = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const fullProfile = {};
+    const user = await User.findOne({ userNAME: req.body.username });
+    if (!user) {
+      return res.status(400).json({ status: "error", msg: "user not found" });
+    }
+
+    fullProfile.username = user.userNAME;
+    fullProfile.email = user.userEMAIL;
+    fullProfile.gender = user.userGENDER;
+
+    const profile = await Profile.findOne({ userID: user._id })
+
+    if (!profile) {
+      return res.status(400).json({ status: "error", msg: "profile not found" });
+    }
+
+    fullProfile.bio = profile.bio ? "" : profile.bio;
+    fullProfile.profilepicture = profile.profilePICTURE ? "" : profile.profilePICTURE;
+
+    res.json(fullProfile);
+
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ status: "error", msg: "get user failed" });
+  }
+};
+
 const refresh = (req, res) => {
   try {
     const decoded = jwt.verify(req.body.refresh, process.env.REFRESH_SECRET);
@@ -197,4 +227,5 @@ module.exports = {
   getAllUser,
   deleteUser,
   updateUserProfile,
+  getUserProfile,
 };
