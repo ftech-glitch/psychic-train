@@ -30,10 +30,11 @@ const Search = (props) => {
       "/api/brewery",
       "POST",
       {
-        name: input,
+        Name: nameRef.current.value,
       },
       userCtx.accessToken
     );
+    console.log(res);
 
     if (res.ok) {
       setBreweries(res.data);
@@ -50,10 +51,10 @@ const Search = (props) => {
   const sortBreweries = breweries
     // sort breweries in alphabetical order
     .sort(function (a, b) {
-      if (a.name < b.name) {
+      if (a.Name < b.Name) {
         return -1;
       }
-      if (a.name > b.name) {
+      if (a.Name > b.Name) {
         return 1;
       }
       return 0;
@@ -63,14 +64,14 @@ const Search = (props) => {
       <>
         <li
           className="list-item"
-          key={brewery.id}
+          key={brewery._id}
           onClick={() => handleBreweryClick(brewery)}
         >
           <div className="list-item-title">
-            <h3>{brewery.name}</h3>
+            <h3>{brewery.Name}</h3>
           </div>
           <div className="list-item-title">
-            <p className="lead">{brewery.city + ", " + brewery.state}</p>
+            <p className="lead">{brewery.City + ", " + brewery.State}</p>
           </div>
         </li>
       </>
