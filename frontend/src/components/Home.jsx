@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Sidebar from "./Sidebar";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
+import Search from "./Search";
 
 const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
@@ -43,7 +44,6 @@ const Home = (props) => {
   useEffect(() => {
     fetchBreweries();
   }, []);
-
 
   // fetch brewery list
   const fetchBreweries = async () => {
@@ -137,6 +137,8 @@ const Home = (props) => {
     }
     return <p className="modal-text">Website: -</p>;
   };
+
+  <Search fetchBreweries={fetchBreweries}></Search>;
 
   return (
     <>
@@ -241,7 +243,7 @@ const Home = (props) => {
               </div>
             </div>
             <br />
-{renderName()}
+            {renderName()}
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}

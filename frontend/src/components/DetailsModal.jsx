@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useContext } from "react";
 import ReactDOM from "react-dom";
 import styles from "./Details.module.css";
 import UpdateForm from "./UpdateForm";
 import glass from "./glass.png";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
 
 const OverLay = (props) => {
-  const [editedBrewery, setEditedBrewery] = useState({
-    fields: { ...props.brewery },
-  });
   const [editMode, setEditMode] = useState(false);
+  const fetchData = useFetch();
+  const userCtx = useContext(UserContext);
+  const [editedBrewery, setEditedBrewery] = useState({});
+
+  const nameRef = useRef("");
+  const typeRef = useRef("");
+  const addressRef = useRef("");
+  const postalRef = useRef("");
+  const cityRef = useRef("");
+  const provinceRef = useRef("");
+  const contactRef = useRef("");
+  const websiteRef = useRef("");
 
   // close modal
   const handleCloseModal = () => {
@@ -30,83 +41,37 @@ const OverLay = (props) => {
   // update brewery
   const handleSaveChanges = async () => {
     const res = await fetchData(
-      "/api/brewery" + id,
+      "/api/brewery" + props.brewery.id,
       "PATCH",
-      {
-        name: name.current.value,
-        type: type.current.value,
-        city: city.current.value,
-        state: province.current.value,
-        address: address.current.value,
-        postal: postal.current.value,
-        contact: contact.current.value,
-        website: website.current.value,
-      }
-    )
+      editedBrewery,
+      userCtx.accessToken
+    );
 
-
-    try {
-      const response = await fetch(
-        `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            records: [
-              {
-                id: props.brewery.id,
-                fields: {
-                  Name: editedBrewery.fields.name,
-                  Type: editedBrewery.fields.brewery_type,
-                  City: editedBrewery.fields.city,
-                  State: editedBrewery.fields.state,
-                  Address: editedBrewery.fields.street,
-                  Postal: editedBrewery.fields.postal_code,
-                  Contact: editedBrewery.fields.phone,
-                  Website: editedBrewery.fields.website_url,
-                },
-              },
-            ],
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update brewery record");
-      }
-
+    if (res.ok) {
       // update local state or trigger a refresh of brewery data
-      props.getBreweries();
+      props.fetchBreweries();
       handleCloseModal();
-    } catch (error) {
-      console.error("Error updating brewery:", error);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
 
   // delete brewery
   const handleDelete = async () => {
-    try {
-      const response = await fetch(
-        `https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201/${props.brewery.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    const res = await fetchData(
+      `/api/brewery/${id}`,
+      "DELETE",
+      undefined,
+      userCtx.accessToken
+    );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete brewery record");
-      }
-      props.getBreweries();
+    if (res.ok) {
+      props.fetchBreweries();
       handleCloseModal();
-    } catch (error) {
-      console.error("Error deleting brewery:", error);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
 
@@ -115,49 +80,55 @@ const OverLay = (props) => {
     setEditMode(false);
   };
 
-  // format phone number
-  const formatNumber = (phoneStr) => {
-    let cleaned = ("", phoneStr).replace(/\D/g, "");
+  // // format phone number
+  // const formatNumber = (phoneStr) => {
+  //   let cleaned = ("", phoneStr).replace(/\D/g, "");
 
-    let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  //   let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
 
-    if (match) {
-      return "(" + match[1] + ") " + match[2] + "-" + match[3];
-    }
+  //   if (match) {
+  //     return "(" + match[1] + ") " + match[2] + "-" + match[3];
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
   // handle phone function
   const renderPhoneNumber = () => {
-    if (props.brewery.phone) {
-      return (
-        <p className="modal-text">Phone: {formatNumber(props.brewery.phone)}</p>
-      );
+    if (props.brewery.Contact) {
+      return <p className="modal-text">Phone: {props.brewery.Contact}</p>;
     }
     return <p className="modal-text">Phone: -</p>;
   };
 
+  // handle name function
+  const renderName = () => {
+    if (props.brewery.Name) {
+      return <p className="modal-text">Name: {props.brewery.Name}</p>;
+    }
+    return <p className="modal-text">Name: -</p>;
+  };
+
   // handle type function
   const renderType = () => {
-    if (props.brewery.brewery_type) {
-      return <p className="modal-text">Type: {props.brewery.brewery_type}</p>;
+    if (props.brewery.Type) {
+      return <p className="modal-text">Type: {props.brewery.Type}</p>;
     }
     return <p className="modal-text">Type: -</p>;
   };
 
   // handle address function
   const renderAddress = () => {
-    if (props.brewery.street && props.brewery.postal_code) {
+    if (props.brewery.Address && props.brewery.Postal) {
       return (
         <p className="modal-text">
           Address:{" "}
           <a
-            href={`https://www.google.com/maps?q=${props.brewery.street},${props.brewery.postal_code}`}
+            href={`https://www.google.com/maps?q=${props.brewery.Address},${props.brewery.Postal}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {props.brewery.street}, {props.brewery.postal_code}
+            {props.brewery.Address}, {props.brewery.Postal}
           </a>
         </p>
       );
@@ -167,16 +138,16 @@ const OverLay = (props) => {
 
   // handle website function
   const renderWebsite = () => {
-    if (props.brewery.website_url) {
+    if (props.brewery.Website) {
       return (
         <p className="modal-text">
           Website:{" "}
           <a
-            href={props.brewery.website_url}
+            href={props.brewery.Website}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {props.brewery.website_url}
+            {props.brewery.Website}
           </a>
         </p>
       );
@@ -190,7 +161,7 @@ const OverLay = (props) => {
         {/* edit modal*/}
         {editMode ? (
           <UpdateForm
-            editedBrewery={editedBrewery}
+            brewery={props.brewery}
             handleInputChange={handleInputChange}
             handleSaveChanges={handleSaveChanges}
             handleCancel={handleCancel}
@@ -209,6 +180,7 @@ const OverLay = (props) => {
                 <img src={glass} alt="glass" className="glass" />
               </div>
             </div>
+            {renderName()}
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}
@@ -241,7 +213,7 @@ const DetailsModal = (props) => {
         <OverLay
           brewery={props.brewery}
           setShowUpdateModal={props.setShowUpdateModal}
-          getBreweries={props.getBreweries}
+          fetchBreweries={props.fetchBreweries}
         ></OverLay>,
         document.querySelector("#modal-root")
       )}

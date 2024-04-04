@@ -15,13 +15,6 @@ const Search = (props) => {
   const userCtx = useContext(UserContext);
 
   const nameRef = useRef("");
-  const typeRef = useRef("");
-  const addressRef = useRef("");
-  const postalRef = useRef("");
-  const cityRef = useRef("");
-  const provinceRef = useRef("");
-  const contactRef = useRef("");
-  const websiteRef = useRef("");
 
   // search for breweries by name
   const searchBreweries = async () => {
@@ -34,7 +27,6 @@ const Search = (props) => {
       },
       userCtx.accessToken
     );
-    console.log(res);
 
     if (res.ok) {
       setBreweries(res.data);
@@ -102,7 +94,7 @@ const Search = (props) => {
         <DetailsModal
           brewery={selectedBrewery}
           setShowUpdateModal={setShowUpdateModal}
-          getBreweries={getBreweries}
+          fetchBreweries={props.fetchBreweries}
           handleCloseModal={handleCloseModal}
           setEditMode={setEditMode}
           formatNumber={props.formatNumber}

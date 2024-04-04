@@ -2,11 +2,13 @@ import React from "react";
 import styles from "./Details.module.css";
 
 const UpdateForm = ({
-  editedBrewery,
+  brewery,
   handleInputChange,
   handleSaveChanges,
   handleCancel,
 }) => {
+  console.log(brewery);
+
   return (
     <div>
       <br />
@@ -15,8 +17,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="name"
-          value={editedBrewery.fields.name}
+          defaultValue={brewery.Name}
           onChange={handleInputChange}
         />
       </div>
@@ -25,8 +26,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="brewery_type"
-          value={editedBrewery.fields.brewery_type}
+          defaultValue={brewery.Type}
           onChange={handleInputChange}
         />
       </div>
@@ -35,8 +35,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="city"
-          value={editedBrewery.fields.city}
+          defaultValue={brewery.City}
           onChange={handleInputChange}
         />
       </div>
@@ -45,8 +44,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="state"
-          value={editedBrewery.fields.state}
+          defaultValue={brewery.State}
           onChange={handleInputChange}
         />
       </div>
@@ -55,8 +53,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="street"
-          value={editedBrewery.fields.street}
+          defaultValue={brewery.Address}
           onChange={handleInputChange}
         />
       </div>
@@ -65,8 +62,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="postal_code"
-          value={editedBrewery.fields.postal_code}
+          defaultValue={brewery.Postal}
           onChange={handleInputChange}
         />
       </div>
@@ -75,8 +71,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="phone"
-          value={editedBrewery.fields.phone}
+          defaultValue={brewery.Contact}
           onChange={handleInputChange}
         />
       </div>
@@ -85,8 +80,7 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          name="website_url"
-          value={editedBrewery.fields.website_url}
+          defaultValue={brewery.Website}
           onChange={handleInputChange}
         />
       </div>
