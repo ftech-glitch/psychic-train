@@ -1,5 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import DetailsModal from "./DetailsModal";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
 
 const Search = (props) => {
   const [loading, setLoading] = useState(false);
@@ -9,6 +11,8 @@ const Search = (props) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedBrewery, setSelectedBrewery] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const fetchData = useFetch();
+  const userCtx = useContext(UserContext);
 
   const nameRef = useRef("");
   const typeRef = useRef("");
@@ -26,25 +30,20 @@ const Search = (props) => {
       "/api/brewery",
       "POST",
       {
-        name: nameRef.current.value,
+        name: input,
       },
       userCtx.accessToken
     );
 
     if (res.ok) {
-      props.getBreweries();
+      setBreweries(res.data);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
     }
 
-    if (!input) {
-      // if no input is provided, clear the breweries and set empty result to true
-      setBreweries([]);
-      setEmptyResult(true);
-      setLoading(false);
-      return;
-    }
+    setLoading(false);
+    setEmptyResult(res.data.length === 0);
   };
 
   // search results
