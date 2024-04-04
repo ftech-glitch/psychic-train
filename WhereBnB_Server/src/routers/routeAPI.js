@@ -12,7 +12,7 @@ const { authUser, authAdmin } = require("../middleware/authVerification");
 
 /*####################### API 01 ##############################################*/
 //Remove auth if you're doing testing
-router.get("/brewery", authUser, getBrewery);
+router.get("/brewery", getBrewery);
 
 /*####################### API 02 ##############################################*/
 //Lookup for specific Brewery send a raw body {"type":"Large"} or {"city":""}

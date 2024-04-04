@@ -6,6 +6,21 @@ const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await AuthModel.find();
+    const outputArray = users.map((user) => ({
+      email: user.email,
+      role: user.role,
+    }));
+
+    res.json(outputArray);
+  } catch (error) {
+    console.error(error.message);
+    res.status(400).json({ status: "error", msg: "error getting users" });
+  }
+};
+
 const register = async (req, res) => {
   try {
     const userExists = await User.findOne({ userNAME: req.body.username });
