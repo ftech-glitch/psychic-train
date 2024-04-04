@@ -4,6 +4,8 @@ const {
   login,
   refresh,
   getAllUser,
+  deleteUser,
+  updateUserProfile,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 /* const {
@@ -19,4 +21,7 @@ router.put("/register", register);
 router.post("/login", login);
 router.post("/refresh", refresh);
 router.get("/users", authAdmin, getAllUser);
+router.post("/users", authAdmin, deleteUser);
+router.post("/users/profile", authAdmin, updateUserProfile);
+
 module.exports = router;

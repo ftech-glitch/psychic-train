@@ -3,13 +3,19 @@ const mongoose = require("mongoose");
 const userProfileSchema = new mongoose.Schema(
   {
     //userID are refer to User _id
-    userID: {
+/*     userID: {
       // Primary Key & Foreign Key
-      type: Number,
+      type: String,
       ref: "User",
       required: true,
       unique: true,
-    },
+    }, */
+    userID: {
+  type: mongoose.Schema.Types.ObjectId, // Instead of type: Number
+  ref: "User",
+  required: true,
+  unique: true,
+},
     bio: {
       type: String, // String.
       required: false,

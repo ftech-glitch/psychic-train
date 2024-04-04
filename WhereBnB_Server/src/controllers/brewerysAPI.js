@@ -14,6 +14,17 @@ const postBrewery = async (req, res) => {
 
 //create new Brewery and add into database
 const createBrewery = async (req, res) => {
+  const BreweryExists = await Brewery.findOne({
+    Name: req.body.Name,
+    State: req.body.State,
+    City: req.body.City,
+  });
+  if (BreweryExists) {
+    return res
+      .status(400)
+      .json({ status: "error", msg: "duplicate Brewery exist" });
+  }
+
   const createBrewery = new Brewery({
     name: req.body.name,
     type: req.body.type,

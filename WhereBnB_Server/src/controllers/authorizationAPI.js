@@ -31,6 +31,65 @@ const getAllUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    console.log("something");
+    // Fetch all users
+    const users = await User.find(req.body);
+    console.log("received request ", users);
+    const deletionPromises = users.map(async (user) => {
+      // Assuming userID is used as a reference in Profile and Auth schemas
+      await Profile.deleteMany({ userID: user._id }); // Adjust if necessary
+      await Auth.deleteMany({ userID: user._id }); // Adjust if necessary
+
+      // Delete the user itself
+      await User.findByIdAndDelete(user._id);
+    });
+
+    // Await all deletion promises to resolve
+    const deletedUsers = await Promise.all(deletionPromises);
+
+    console.log(deletedUsers); // Logs the IDs of deleted users
+    res.json(deletedUsers);
+
+    res.json({
+      status: "ok",
+      msg: `User Account has been deleted: ${deletedUsers}`,
+    });
+  } catch (error) {
+    console.error("Error deleting all users", error);
+    res.status(500).send("An error occurred while deleting users.");
+  }
+};
+
+const updateUserProfile = async (req, res) => {
+  try {
+    // Find base on username
+    console.log("received ", req.body.username);
+    const users = await User.find({ userNAME: req.body.username });
+    console.log("find user ", users);
+    const response = await Profile.findOneAndUpdate(
+      { userID: users._id }, // Correctly reference the user's ID
+      { profilePICTURE: req.body.profilepicture }, // Update operation
+      { new: true } // Return the updated document
+    );
+    if (response.ok) {
+      console.log("Successfully Update the profile Pictrure From Databse");
+      res.json({
+        status: "Success",
+        msg: `profile Pictrure Updated ${users.userNAME}`,
+      });
+      return;
+    }
+    res.json({
+      status: "Unable to Update porile picture",
+      msg: `Unable to Updated ${users.userNAME} profile picture`,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+  }
+};
+
 const register = async (req, res) => {
   try {
     const userExists = await User.findOne({ userNAME: req.body.username });
@@ -39,10 +98,11 @@ const register = async (req, res) => {
         .status(400)
         .json({ status: "error", msg: "duplicate username" });
     }
-    const newUserId = (await User.countDocuments()) + 1;
+
+    /*     const newUserId = (await User.countDocuments()) + 1; */
     // Create the user without manually setting _id
     const newUser = await User.create({
-      _id: newUserId,
+      /*   _id: newUserId, */
       userNAME: req.body.username,
       userEMAIL: req.body.email,
       userGENDER: req.body.gender,
@@ -132,4 +192,11 @@ const refresh = (req, res) => {
   }
 };
 
-module.exports = { register, login, refresh, getAllUser };
+module.exports = {
+  register,
+  login,
+  refresh,
+  getAllUser,
+  deleteUser,
+  updateUserProfile,
+};
