@@ -23,6 +23,14 @@ const NavBar = () => {
               Submit a new brewery
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              className={(navData) => (navData.isActive ? styles.active : "")}
+              to="/review"
+            >
+              Share your experience
+            </NavLink>
+          </li>
         </ul>
       </nav>
     </header>
