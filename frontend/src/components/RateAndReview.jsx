@@ -2,20 +2,43 @@ import React, { useState, useEffect, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
-const RateAndReview = (props) => {
+const RateAndReview = ({
+  allBreweries,
+  setSelectedBrewery,
+  setBreweries,
+  breweries,
+}) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const userCtx = useContext(UserContext);
   const fetchData = useFetch();
 
-  console.log("Breweries:", props.allBreweries);
+  useEffect(() => {
+    getBreweries();
+  }, []);
+
+  const getBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+      setSelectedBrewery(res.data[0]);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
 
   const handleBreweryChange = (event) => {
     const breweryName = event.target.value;
-    const brewery = props.allBreweries.find(
+    const brewery = allBreweries.find(
       (brewery) => brewery.Name === breweryName
     );
-    props.setSelectedBrewery(brewery);
+    setSelectedBrewery(brewery);
   };
 
   const handleRatingChange = (event) => {
@@ -28,7 +51,7 @@ const RateAndReview = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!props.selectedBrewery) {
+    if (!selectedBrewery) {
       alert("Please select a brewery");
       return;
     }
@@ -41,7 +64,7 @@ const RateAndReview = (props) => {
       return;
     }
     const data = {
-      breweryName: props.selectedBrewery.Name,
+      breweryName: selectedBrewery.Name,
       rating: rating,
       review: review,
     };
@@ -67,8 +90,8 @@ const RateAndReview = (props) => {
           <label htmlFor="brewery">Select Brewery:</label>
           <select id="brewery" onChange={handleBreweryChange} required>
             <option value="">Select Brewery</option>
-            {props.allBreweries &&
-              props.allBreweries.map((brewery) => (
+            {allBreweries &&
+              allBreweries.map((brewery) => (
                 <option key={brewery._id} value={brewery.Name}>
                   {brewery.Name}
                 </option>

@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import UserContext from "../context/user";
 import useFetch from "../hooks/useFetch";
+import Home from "./Home";
 
-const Add = () => {
+const Add = ({ fetchBreweries }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
@@ -16,11 +17,16 @@ const Add = () => {
   const [contact, setContact] = useState("");
   const [website, setWebsite] = useState("");
 
+  // close alert message
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+  };
+
   // add new brewery
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    // e.preventDefault();
     const res = await fetchData(
-      "api/brewery",
+      "/api/brewery",
       "PUT",
       {
         name: name,
@@ -36,16 +42,12 @@ const Add = () => {
     );
 
     if (res.ok) {
-      getBreweries();
+      fetchBreweries();
+      setShowSuccess(true);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
     }
-  };
-
-  // close alert message
-  const handleCloseSuccess = () => {
-    setShowSuccess(false);
   };
 
   return (
