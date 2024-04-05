@@ -7,7 +7,7 @@ const brewerySchema = new Schema(
       type: String,
       required: false,
     },
-    Yype: {
+    Type: {
       type: String,
       required: false,
     },
@@ -19,7 +19,7 @@ const brewerySchema = new Schema(
       type: String,
       required: false,
     },
-    address: {
+    Address: {
       type: String,
       required: false,
     },

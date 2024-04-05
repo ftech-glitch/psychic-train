@@ -26,14 +26,14 @@ const createBrewery = async (req, res) => {
   }
 
   const createBrewery = new Brewery({
-    name: req.body.name,
-    type: req.body.type,
-    city: req.body.city,
-    state: req.body.state,
-    address: req.body.address,
-    postal: req.body.postal,
-    contact: req.body.contact,
-    website: req.body.website,
+    Name: req.body.name,
+    Type: req.body.type,
+    City: req.body.city,
+    State: req.body.state,
+    Address: req.body.address,
+    Postal: req.body.postal,
+    Contact: req.body.contact,
+    Website: req.body.website,
   });
   await createBrewery.save();
 
@@ -46,14 +46,14 @@ const createBrewery = async (req, res) => {
 //Update the brewery base on ID
 const patchBrewery = async (req, res) => {
   const response = await Brewery.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    type: req.body.type,
-    city: req.body.city,
-    state: req.body.state,
-    address: req.body.address,
-    postal: req.body.postal,
-    contact: req.body.contact,
-    website: req.body.website,
+    Name: req.body.name,
+    theBreweryype: req.body.type,
+    City: req.body.city,
+    State: req.body.state,
+    Address: req.body.address,
+    Postal: req.body.postal,
+    Contact: req.body.contact,
+    Website: req.body.website,
   });
   if (response.ok) {
     console.log("Successfully Update the Brewery From Databse");
