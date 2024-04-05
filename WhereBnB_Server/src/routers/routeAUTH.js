@@ -6,7 +6,6 @@ const {
   getAllUser,
   deleteUser,
   updateUserProfile,
-  getUser,
   getUserProfile,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
@@ -23,10 +22,10 @@ router.put("/register", register);
 router.post("/login", login);
 router.post("/refresh", refresh);
 router.get("/users", getAllUser);
-router.post("/users", authAdmin, deleteUser);
+router.post("/users/:id", authAdmin, deleteUser);
 //Inorder for updateUserProfile work please send {"bio":"","profile":""}
 router.post("/users/profile", authUser || authAdmin, updateUserProfile);
-
+//Get their own information
 router.get("/users/profile", authUser || authAdmin, getUserProfile);
 
 module.exports = router;
