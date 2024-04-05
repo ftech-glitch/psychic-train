@@ -182,22 +182,21 @@ const getUserProfile = async (req, res) => {
     fullProfile.email = user.userEMAIL;
     fullProfile.gender = user.userGENDER;
 
-    const profile = await Profile.findOne({ userID: user._id });
+    const profile = await Profile.findOne({ userID: user._id })
 
     if (!profile) {
-      return res
-        .status(400)
-        .json({ status: "error", msg: "profile not found" });
+      return res.status(400).json({ status: "error", msg: "profile not found" });
     }
 
     fullProfile.bio = profile.bio ? "" : profile.bio;
-    fullProfile.profilepicture = profile.profilePICTURE
-      ? ""
-      : profile.profilePICTURE;
+    fullProfile.profilepicture = profile.profilePICTURE ? "" : profile.profilePICTURE;
 
     res.json(fullProfile);
+
   } catch (error) {
-    return res.status(400).json({ status: "error", msg: "get user failed" });
+    return res
+      .status(400)
+      .json({ status: "error", msg: "get user failed" });
   }
 };
 

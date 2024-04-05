@@ -1,36 +1,67 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
 import glass from "./glass.png";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Sidebar from "./Sidebar";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
+import Search from "./Search";
+import RateAndReview from "./RateAndReview";
 
-const Home = () => {
+const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [allBreweries, setAllBreweries] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const userCtx = useContext(UserContext);
+  const [breweries, setBreweries] = useState([]);
+  const fetchData = useFetch();
+
+  const defaultTheme = createTheme();
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+      primary: {
+        main: "#90caf9",
+      },
+      secondary: {
+        main: "#ffcc80",
+      },
+    },
+  });
+
+  // fetch brewery list when component mounts
+  useEffect(() => {
+    fetchBreweries();
+  }, []);
 
   // fetch brewery list
-  useEffect(() => {
-    const fetchBreweries = async () => {
-      setLoading(true);
-      const response = await fetch(
-        `https://api.openbrewerydb.org/breweries?page=${page}&per_page=50`
-      );
-      const data = await response.json();
-      if (data.length > 0) {
-        setAllBreweries((prevBreweries) => [...prevBreweries, ...data]);
-        setPage((prevPage) => prevPage + 1);
-      } else {
-        setHasMore(false);
-      }
-      setLoading(false);
-    };
-
-    fetchBreweries();
-  }, [page]);
+  const fetchBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+      setAllBreweries(res.data);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
 
   // generate a random brewery from brewery list
   const getRandomBrewery = () => {
@@ -46,40 +77,33 @@ const Home = () => {
     setShowModal(false);
   };
 
-  // format phone number
-  const formatNumber = (phoneStr) => {
-    let cleaned = ("", phoneStr).replace(/\D/g, "");
-
-    let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-
-    if (match) {
-      return "(" + match[1] + ") " + match[2] + "-" + match[3];
+  // handle name fuction
+  const renderName = () => {
+    if (randomBrewery.Name) {
+      return <p className="modal-text">Name: {randomBrewery.Name}</p>;
     }
-
-    return null;
+    return <p className="modal-text">Name: -</p>;
   };
 
   // handle phone function
   const renderPhoneNumber = () => {
-    if (randomBrewery.phone) {
-      return (
-        <p className="modal-text">Phone: {formatNumber(randomBrewery.phone)}</p>
-      );
+    if (randomBrewery.Contact) {
+      return <p className="modal-text">Phone: {randomBrewery.Contact}</p>;
     }
     return <p className="modal-text">Phone: -</p>;
   };
 
   // handle type function
   const renderType = () => {
-    if (randomBrewery.brewery_type) {
-      return <p className="modal-text">Type: {randomBrewery.brewery_type}</p>;
+    if (randomBrewery.Type) {
+      return <p className="modal-text">Type: {randomBrewery.Type}</p>;
     }
     return <p className="modal-text">Type: -</p>;
   };
 
   // handle address function
   const renderAddress = () => {
-    if (randomBrewery.street && randomBrewery.postal_code) {
+    if (randomBrewery.Address && randomBrewery.Postal) {
       return (
         <p className="modal-text">
           Address:{" "}
@@ -88,7 +112,7 @@ const Home = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {randomBrewery.street}, {randomBrewery.postal_code}
+            {randomBrewery.Address}, {randomBrewery.Postal}
           </a>
         </p>
       );
@@ -98,16 +122,16 @@ const Home = () => {
 
   // handle website function
   const renderWebsite = () => {
-    if (randomBrewery.website_url) {
+    if (randomBrewery.Website) {
       return (
         <p className="modal-text">
           Website:{" "}
           <a
-            href={randomBrewery.website_url}
+            href={randomBrewery.Website}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {randomBrewery.website_url}
+            {randomBrewery.Website}
           </a>
         </p>
       );
@@ -115,64 +139,132 @@ const Home = () => {
     return <p className="modal-text">Website: -</p>;
   };
 
+  <Search fetchBreweries={fetchBreweries} />;
+
+  <RateAndReview
+    fetchBreweries={fetchBreweries}
+    breweries={breweries}
+    setBreweries={setBreweries}
+    allBreweries={allBreweries}
+  />;
+
   return (
     <>
-      <br />
-      <div className="image-container">
-        <img src={cheers} alt="cheers" className="cheers" />
-      </div>
-      <br />
-      <br />
-      <h1 className="header">Discover Your Next HopSpot</h1>
-      <h5 className="subheader">Connecting beer enthusiasts with breweries</h5>
-      <br />
-      <br />
-      {/* buttons */}
-      <div className="d-flex justify-content-center">
-        <div className="col-md-3">
-          <button
-            className="btn btn-dark"
-            type="button"
-            id="button-addon1"
-            data-ripple-color="dark"
-            onClick={getRandomBrewery}
+      <ThemeProvider theme={darkTheme}>
+        <Grid container component="main" sx={{ height: "100vh" }}>
+          <CssBaseline />
+          <Box
+            sx={{
+              margin: "1rem",
+              display: "grid",
+              gridTemplateColumns: "70% 30%",
+              alignItems: "start",
+              justifyContent: "center",
+            }}
           >
-            Generate a random brewery
-          </button>
-        </div>
-        <div className="col-md-3">
-          <Link to="/search" className="btn btn-dark" role="button">
-            Search for breweries
-          </Link>
-        </div>
-      </div>
-      <br />
-      <br />
+            <Grid container item xs={12} justifyContent="center" spacing={2}>
+              <Grid item xs={12} sx={{ margin: "2rem" }}>
+                <img
+                  src={cheers}
+                  alt="cheers"
+                  style={{ width: "200px", height: "200px" }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="h2" className="header">
+                  Discover Your Next HopSpot
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="h5" className="subheader">
+                  Connecting beer enthusiasts with breweries
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={getRandomBrewery}
+                >
+                  Generate a random brewery
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  href="/search"
+                  variant="contained"
+                  color="primary"
+                  role="button"
+                >
+                  Search for breweries
+                </Button>
+              </Grid>
+            </Grid>
+
+            <Grid
+              container
+              item
+              sx={{
+                height: "100%",
+              }}
+            >
+              <Grid item>
+                <Sidebar
+                  accessTokenLength={props.accessTokenLength}
+                  showLogin={props.showLogin}
+                  setShowLogin={props.setShowLogin}
+                  theme={darkTheme}
+                ></Sidebar>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+      </ThemeProvider>
+
       {/* random brewery modal */}
       {randomBrewery && showModal && (
         <div className={styles.backdrop}>
           <div className={styles.modal}>
             <div className="row align-items-center">
               <div className="col-md-3 text-center">
-                <img src={glass} alt="glass" className="glass" />
+                <img
+                  src={glass}
+                  alt="glass"
+                  className="glass"
+                  style={{ width: "100px", height: "100px" }}
+                />
               </div>
               <div className="col-md-6 text-center">
-                <h5 className="random-brewery">Your Brewery of the Day </h5>
+                <Typography variant="h5" className="random-brewery">
+                  Your Brewery of the Day{" "}
+                </Typography>
               </div>
               <div className="col-md-3 text-center">
-                <img src={glass} alt="glass" className="glass" />
+                <img
+                  src={glass}
+                  alt="glass"
+                  className="glass"
+                  style={{ width: "100px", height: "100px" }}
+                />
               </div>
             </div>
             <br />
-            <p className="modal-text">Name: {randomBrewery.name}</p>
+            {renderName()}
             {renderType()}
             {renderAddress()}
             {renderPhoneNumber()}
             {renderWebsite()}
             <div className={styles.buttonGroup}>
-              <button className={styles.modalButton} onClick={handleCloseModal}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={styles.modalButton}
+                onClick={handleCloseModal}
+              >
                 close
-              </button>
+              </Button>
             </div>
           </div>
         </div>

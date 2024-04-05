@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import UserContext from "../context/user";
+import useFetch from "../hooks/useFetch";
 
 const Add = () => {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const fetchData = useFetch();
+  const userCtx = useContext(UserContext);
+
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [address, setAddress] = useState("");
@@ -9,51 +15,31 @@ const Add = () => {
   const [province, setProvince] = useState("");
   const [contact, setContact] = useState("");
   const [website, setWebsite] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
 
-  // add new brewery to airtable
+  // add new brewery
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const airtableAPI =
-      "https://api.airtable.com/v0/appQPGY7SNCdqDtdV/Table%201";
-    const apiKey =
-      "patxkA4uOl3Cyh9sV.adcda182ede1acc1b0a6684224f61b1b7d78439ac2f7376b6b09a554bdb8f675";
-    const headers = {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    };
-    const data = {
-      fields: {
-        Name: name,
-        Type: type,
-        City: city,
-        State: province,
-        Address: address,
-        Postal: postal,
-        Contact: contact,
-        Website: website,
+    const res = await fetchData(
+      "api/brewery",
+      "PUT",
+      {
+        name: name,
+        type: type,
+        city: city,
+        state: province,
+        address: address,
+        postal: postal,
+        contact: contact,
+        website: website,
       },
-    };
+      userCtx.accessToken
+    );
 
-    try {
-      const response = await fetch(airtableAPI, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      console.log(result);
-      setName("");
-      setType("");
-      setAddress("");
-      setPostal("");
-      setCity("");
-      setProvince("");
-      setContact("");
-      setWebsite("");
-      setShowSuccess(true);
-    } catch (error) {
-      console.error(error);
+    if (res.ok) {
+      getBreweries();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
 
@@ -72,10 +58,9 @@ const Add = () => {
           <label className="col-md-2">Name:</label>
           <input
             type="text"
-            placeholder="name"
             aria-label="Search"
             className="col-md-3"
-            value={name}
+            placeholder="name"
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -84,10 +69,9 @@ const Add = () => {
           <label className="col-md-2">Type:</label>
           <input
             type="text"
-            placeholder="type"
             aria-label="Search"
             className="col-md-3"
-            value={type}
+            placeholder="type"
             onChange={(e) => setType(e.target.value)}
           />
         </div>
@@ -96,10 +80,9 @@ const Add = () => {
           <label className="col-md-2">City:</label>
           <input
             type="text"
-            placeholder="city"
             aria-label="Search"
             className="col-md-3"
-            value={city}
+            placeholder="city"
             onChange={(e) => setCity(e.target.value)}
           />
         </div>
@@ -111,7 +94,6 @@ const Add = () => {
             placeholder="state"
             aria-label="Search"
             className="col-md-3"
-            value={province}
             onChange={(e) => setProvince(e.target.value)}
           />
         </div>
@@ -120,10 +102,9 @@ const Add = () => {
           <label className="col-md-2">Address:</label>
           <input
             type="text"
-            placeholder="address"
             aria-label="Search"
             className="col-md-3"
-            value={address}
+            placeholder="address"
             onChange={(e) => setAddress(e.target.value)}
           />
         </div>
@@ -132,10 +113,9 @@ const Add = () => {
           <label className="col-md-2">Postal Code:</label>
           <input
             type="text"
-            placeholder="postal code"
             aria-label="Search"
             className="col-md-3"
-            value={postal}
+            placeholder="postal code"
             onChange={(e) => setPostal(e.target.value)}
           />
         </div>
@@ -144,10 +124,9 @@ const Add = () => {
           <label className="col-md-2">Contact:</label>
           <input
             type="text"
-            placeholder="contact"
             aria-label="Search"
             className="col-md-3"
-            value={contact}
+            placeholder="contact"
             onChange={(e) => setContact(e.target.value)}
           />
         </div>
@@ -156,10 +135,9 @@ const Add = () => {
           <label className="col-md-2">Website:</label>
           <input
             type="text"
-            placeholder="website"
             aria-label="Search"
             className="col-md-3"
-            value={website}
+            placeholder="website"
             onChange={(e) => setWebsite(e.target.value)}
           />
         </div>

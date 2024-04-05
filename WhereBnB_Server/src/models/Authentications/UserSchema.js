@@ -6,11 +6,11 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema(
   {
     //_id represent userID as parent
-    _id: {
-      type: Number,
+    /*     _id: {
+      type: String,
       required: true,
       unique: true,
-    },
+    }, */
     userNAME: {
       type: String,
       required: true,
@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema(
     userROLE: {
       type: String,
       enum: ["admin", "user"],
+      default: "user",
       required: true,
     },
     loginDATE: {

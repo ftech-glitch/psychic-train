@@ -3,35 +3,35 @@ const Schema = mongoose.Schema;
 
 const brewerySchema = new Schema(
   {
-    name: {
+    Name: {
       type: String,
-      required: true,
+      required: false,
     },
-    type: {
+    Yype: {
       type: String,
-      required: true,
+      required: false,
     },
-    city: {
+    City: {
       type: String,
-      required: true,
+      required: false,
     },
-    state: {
+    State: {
       type: String,
-      required: true,
+      required: false,
     },
     address: {
       type: String,
-      required: true,
+      required: false,
     },
-    postal: {
+    Postal: {
       type: String,
-      required: true,
+      required: false,
     },
-    contact: {
+    Contact: {
       type: Number,
-      required: true,
+      required: false,
     },
-    website: {
+    Website: {
       type: String,
       required: false, // Assuming the website might not be available for all entries
     },
