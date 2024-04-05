@@ -18,7 +18,16 @@ function App() {
 
   return (
     <>
-      <UserContext.Provider value={{ accessToken, setAccessToken, role, setRole, userProfile, setUserProfile }}>
+      <UserContext.Provider
+        value={{
+          accessToken,
+          setAccessToken,
+          role,
+          setRole,
+          userProfile,
+          setUserProfile,
+        }}
+      >
         <NavBar></NavBar>
         {accessToken.length > 0 && (
           <Routes>

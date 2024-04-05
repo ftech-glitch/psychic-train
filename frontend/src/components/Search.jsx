@@ -2,7 +2,6 @@ import React, { useState, useRef, useContext } from "react";
 import DetailsModal from "./DetailsModal";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
-import RateAndReview from "./RateAndReview";
 
 const Search = (props) => {
   const [loading, setLoading] = useState(false);

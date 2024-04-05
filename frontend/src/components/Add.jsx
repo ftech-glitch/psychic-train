@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import UserContext from "../context/user";
 import useFetch from "../hooks/useFetch";
 import Home from "./Home";

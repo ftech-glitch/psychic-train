@@ -1,131 +1,103 @@
-import React, { useState, useEffect, useContext } from "react";
-import useFetch from "../hooks/useFetch";
-import UserContext from "../context/user";
+import React, { useState, useEffect } from "react";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
-const RateAndReview = ({
-  allBreweries,
-  setSelectedBrewery,
-  setBreweries,
-  breweries,
-}) => {
+const RateAndReview = ({ breweries }) => {
+  const [selectedBrewery, setSelectedBrewery] = useState("");
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-  const userCtx = useContext(UserContext);
-  const fetchData = useFetch();
-
-  useEffect(() => {
-    getBreweries();
-  }, []);
-
-  const getBreweries = async () => {
-    const res = await fetchData(
-      "/api/brewery",
-      "GET",
-      undefined,
-      userCtx.accessToken
-    );
-    if (res.ok) {
-      setBreweries(res.data);
-      setSelectedBrewery(res.data[0]);
-    } else {
-      alert(JSON.stringify(res.data));
-      console.log(res.data);
-    }
-  };
 
   const handleBreweryChange = (event) => {
-    const breweryName = event.target.value;
-    const brewery = allBreweries.find(
-      (brewery) => brewery.Name === breweryName
-    );
-    setSelectedBrewery(brewery);
+    setSelectedBrewery(event.target.value);
   };
 
   const handleRatingChange = (event) => {
-    setRating(parseInt(event.target.value));
+    setRating(event.target.value);
   };
 
   const handleReviewChange = (event) => {
     setReview(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!selectedBrewery) {
-      alert("Please select a brewery");
-      return;
+  const handleSubmit = () => {
+    if (rating && review) {
+      // onSubmit({ rating, review }); --> create api endpoint to add rating & review
+      setRating(0);
+      setReview("");
+    } else {
+      alert("Please provide both rating and review.");
     }
-    if (rating === 0) {
-      alert("Please provide a rating");
-      return;
-    }
-    if (review.trim() === "") {
-      alert("Please provide a review");
-      return;
-    }
-    const data = {
-      breweryName: selectedBrewery.Name,
-      rating: rating,
-      review: review,
-    };
-
-    //     const res = await fetchData(
-    //       "/api/reviews",
-    //       "POST",
-    //       data,
-    //       userCtx.accessToken
-    //     );
-    //     if (res.ok) {
-    //       alert("Review submitted successfully");
-    //     } else {
-    //       alert("Failed to submit review: " + res.error);
-    //     }
   };
 
   return (
-    <div>
-      <h2>Rate and Review</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="brewery">Select Brewery:</label>
-          <select id="brewery" onChange={handleBreweryChange} required>
-            <option value="">Select Brewery</option>
-            {allBreweries &&
-              allBreweries.map((brewery) => (
-                <option key={brewery._id} value={brewery.Name}>
-                  {brewery.Name}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div>
-          <label>Rating:</label>
-          <select
-            id="rating"
-            value={rating}
-            onChange={handleRatingChange}
-            required
-          >
-            <option value="">Select Rating</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </div>
-        <div>
-          <label>Review:</label>
-          <textarea
-            id="review"
-            value={review}
-            onChange={handleReviewChange}
-            required
-          />
-        </div>
-        <button type="submit">Submit Review</button>
-      </form>
-    </div>
+    <Box
+      sx={{
+        maxWidth: 800,
+        backgroundColor: "white",
+        padding: "1rem",
+        borderRadius: "8px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        Rate and Review
+      </Typography>
+      <TextField
+        select
+        fullWidth
+        label="Brewery"
+        value={selectedBrewery}
+        onChange={handleBreweryChange}
+        SelectProps={{
+          native: true,
+        }}
+        sx={{ mb: 2 }}
+      >
+        <option value="" disabled>
+          Select a brewery
+        </option>
+        {breweries.map((brewery) => (
+          <option key={brewery._id} value={brewery.Name}>
+            {brewery.Name}
+          </option>
+        ))}
+      </TextField>
+      {/* Rating input field */}
+      <TextField
+        select
+        fullWidth
+        label="Rating"
+        value={rating}
+        onChange={handleRatingChange}
+        SelectProps={{
+          native: true,
+        }}
+        sx={{ mb: 2 }}
+      >
+        {[...Array(5)].map((_, index) => (
+          <option key={index + 1} value={index + 1}>
+            {index + 1}
+          </option>
+        ))}
+      </TextField>
+      <TextField
+        fullWidth
+        multiline
+        rows={4}
+        label="Review"
+        value={review}
+        onChange={handleReviewChange}
+        sx={{ mb: 2 }}
+      />
+      <Button variant="contained" color="primary" onClick={handleSubmit}>
+        Submit
+      </Button>
+    </Box>
   );
 };
 
