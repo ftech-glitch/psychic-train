@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-const mongoose = require("mongoose");
 const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
@@ -11,6 +10,15 @@ const extractToken = (req) => {
   const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
   console.log("token:", decoded);
   return decoded;
+};
+
+const getLocalTime = () => {
+  const currentDate = new Date();
+  currentDate.setTime(currentDate.getTime() + 8 * 60 * 60 * 1000);
+  const formattedDate = currentDate.toLocaleString("en-SG", {
+    timeZone: "Asia/Singapore",
+  });
+  return formattedDate;
 };
 
 const getAllUser = async (req, res) => {
@@ -40,38 +48,29 @@ const getAllUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    console.log("something");
-    // Fetch all users
-    const users = await User.find(req.body);
-    console.log("received request ", users);
-    const deletionPromises = users.map(async (user) => {
-      // Assuming userID is used as a reference in Profile and Auth schemas
-      await Profile.deleteMany({ userID: user._id }); // Adjust if necessary
-      await Auth.deleteMany({ userID: user._id }); // Adjust if necessary
+    const user = await User.findById(req.params.id);
 
-      // Delete the user itself
-      await User.findByIdAndDelete(user._id);
-    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await Profile.deleteOne({ userID: user._id });
+    await Auth.deleteOne({ userID: user._id });
 
-    // Await all deletion promises to resolve
-    const deletedUsers = await Promise.all(deletionPromises);
+    await User.findByIdAndDelete(user._id);
 
-    console.log(deletedUsers); // Logs the IDs of deleted users
-    res.json(deletedUsers);
-
+    console.log(`User account deleted for userID: ${user._id}`);
     res.json({
       status: "ok",
-      msg: `User Account has been deleted: ${deletedUsers}`,
+      msg: `User account deleted for userID: ${user._id}`,
     });
   } catch (error) {
-    console.error("Error deleting all users", error);
-    res.status(500).send("An error occurred while deleting users.");
+    console.error("Error deleting user ", error);
+    res.status(500).send("An error deleting the user");
   }
 };
 
 const updateUserProfile = async (req, res) => {
   try {
-    // F
     const decoded = extractToken(req);
     const users = await User.find({ userNAME: decoded.username });
 
@@ -143,6 +142,15 @@ const register = async (req, res) => {
   }
 };
 
+const loginDATE = async () => {
+  const updateUSER = await User.findOneAndUpdate(
+    { _id: user._id },
+    { $set: { loginDATE: Date.now } },
+    { new: true }
+  );
+  console.log("Updated Profile Login Date: ", updateUSER);
+};
+
 const login = async (req, res) => {
   try {
     const user = await User.findOne({ userNAME: req.body.username });
@@ -150,12 +158,18 @@ const login = async (req, res) => {
       return res.status(400).json({ status: "error", msg: "not authorised" });
     }
     const auth = await Auth.findOne({ userNAME: user.userNAME });
-    console.log(auth);
     const result = await bcrypt.compare(req.body.password, auth.userHASH);
     if (!result) {
       console.log("username or password error");
       return res.status(401).json({ status: "error", msg: "login failed" });
     }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id },
+      { $set: { loginDATE: getLocalTime() } },
+      { new: true }
+    );
+    console.log("Updated Profile Login Date: ", updatedUser);
 
     const claims = {
       username: auth.userNAME,
@@ -170,6 +184,7 @@ const login = async (req, res) => {
       expiresIn: "30d",
       jwtid: uuidv4(),
     });
+
     res.json({ access, refresh });
   } catch (error) {
     return res
@@ -180,32 +195,26 @@ const login = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    const fullProfile = {};
-    const user = await User.findOne({ userNAME: req.body.username });
+    const decoded = extractToken(req);
+    const user = await User.findOne({ userNAME: decoded.username });
     if (!user) {
-      return res.status(400).json({ status: "error", msg: "user not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    fullProfile.username = user.userNAME;
-    fullProfile.email = user.userEMAIL;
-    fullProfile.gender = user.userGENDER;
+    const userProfile = await Profile.findOne({ userID: user._id });
+    const userAuth = await Auth.findOne({ userID: user._id });
 
-    const profile = await Profile.findOne({ userID: user._id });
+    const userDetails = {
+      userInfo: user,
+      userProfile,
+      userAuth,
+    };
 
-    if (!profile) {
-      return res
-        .status(400)
-        .json({ status: "error", msg: "profile not found" });
-    }
-
-    fullProfile.bio = profile.bio ? "" : profile.bio;
-    fullProfile.profilepicture = profile.profilePICTURE
-      ? ""
-      : profile.profilePICTURE;
-
-    res.json(fullProfile);
+    console.log(userDetails);
+    res.json(userDetails);
   } catch (error) {
-    return res.status(400).json({ status: "error", msg: "get user failed" });
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Error fetching user details" });
   }
 };
 
@@ -232,6 +241,7 @@ const refresh = (req, res) => {
 module.exports = {
   register,
   login,
+  loginDATE,
   refresh,
   getAllUser,
   deleteUser,
