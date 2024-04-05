@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
 import glass from "./glass.png";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
@@ -23,7 +22,6 @@ const Home = (props) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const userCtx = useContext(UserContext);
   const [breweries, setBreweries] = useState([]);
   const fetchData = useFetch();
@@ -45,6 +43,7 @@ const Home = (props) => {
   useEffect(() => {
     fetchBreweries();
   }, []);
+
 
   // fetch brewery list
   const fetchBreweries = async () => {
