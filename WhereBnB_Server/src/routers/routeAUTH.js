@@ -6,7 +6,6 @@ const {
   getAllUser,
   deleteUser,
   updateUserProfile,
-  getUser,
   getUserProfile,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
