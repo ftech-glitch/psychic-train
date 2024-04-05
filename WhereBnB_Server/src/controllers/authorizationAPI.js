@@ -6,6 +6,13 @@ const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
 
+const extractToken = (req) => {
+  const token = req.headers["authorization"].replace("Bearer ", "");
+  const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+  console.log("token:", decoded);
+  return decoded;
+};
+
 const getAllUser = async (req, res) => {
   try {
     // Fetch all users
@@ -64,13 +71,14 @@ const deleteUser = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    // Fetch all users
-    const users = await User.find({ userNAME: req.body.username });
+    // F
+    const decoded = extractToken(req);
+    const users = await User.find({ userNAME: decoded.username });
 
     const userDetailsPromises = users.map(async (user) => {
       const userProfile = await Profile.findOneAndUpdate(
         { userID: user._id },
-        { $set: { profilePICTURE: req.body.picture } },
+        { $set: req.body },
         { new: true }
       );
       return {
@@ -182,21 +190,22 @@ const getUserProfile = async (req, res) => {
     fullProfile.email = user.userEMAIL;
     fullProfile.gender = user.userGENDER;
 
-    const profile = await Profile.findOne({ userID: user._id })
+    const profile = await Profile.findOne({ userID: user._id });
 
     if (!profile) {
-      return res.status(400).json({ status: "error", msg: "profile not found" });
+      return res
+        .status(400)
+        .json({ status: "error", msg: "profile not found" });
     }
 
     fullProfile.bio = profile.bio ? "" : profile.bio;
-    fullProfile.profilepicture = profile.profilePICTURE ? "" : profile.profilePICTURE;
+    fullProfile.profilepicture = profile.profilePICTURE
+      ? ""
+      : profile.profilePICTURE;
 
     res.json(fullProfile);
-
   } catch (error) {
-    return res
-      .status(400)
-      .json({ status: "error", msg: "get user failed" });
+    return res.status(400).json({ status: "error", msg: "get user failed" });
   }
 };
 

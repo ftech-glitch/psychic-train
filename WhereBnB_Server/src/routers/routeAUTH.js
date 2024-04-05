@@ -25,6 +25,7 @@ router.post("/refresh", refresh);
 router.get("/users", getAllUser);
 router.post("/users", authAdmin, deleteUser);
 router.post("/users/profile", authUser || authAdmin, updateUserProfile);
+//Inorder for GetUserPorifle work please send {"bio","profile"}
 router.post("/users/userprofile", getUserProfile);
 
 module.exports = router;
