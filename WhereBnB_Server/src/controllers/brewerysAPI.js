@@ -15,6 +15,7 @@ const postBrewery = async (req, res) => {
 //create new Brewery and add into database
 const createBrewery = async (req, res) => {
   const BreweryExists = await Brewery.findOne({
+    Name: req.body.name,
     State: req.body.state,
     City: req.body.city,
   });
