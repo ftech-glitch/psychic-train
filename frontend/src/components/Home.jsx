@@ -15,6 +15,7 @@ import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import Search from "./Search";
 import RateAndReview from "./RateAndReview";
+import Add from "./Add";
 
 const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
@@ -57,6 +58,7 @@ const Home = (props) => {
     if (res.ok) {
       setBreweries(res.data);
       setAllBreweries(res.data);
+      setLoading(false);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -139,17 +141,25 @@ const Home = (props) => {
     return <p className="modal-text">Website: -</p>;
   };
 
-  <Search fetchBreweries={fetchBreweries} />;
-
-  <RateAndReview
-    fetchBreweries={fetchBreweries}
-    breweries={breweries}
-    setBreweries={setBreweries}
-    allBreweries={allBreweries}
-  />;
-
   return (
     <>
+      {/* {breweries.map((item) => {
+        return (
+          <Add
+            key={item._id}
+            id={item._id}
+            name={item.name}
+            type={item.type}
+            city={item.city}
+            state={item.state}
+            address={item.address}
+            postal={item.postal}
+            contact={item.contact}
+            website={item.website}
+            fetchBreweries={fetchBreweries}
+          />
+        );
+      })} */}
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />
@@ -222,7 +232,6 @@ const Home = (props) => {
           </Box>
         </Grid>
       </ThemeProvider>
-
       {/* random brewery modal */}
       {randomBrewery && showModal && (
         <div className={styles.backdrop}>
