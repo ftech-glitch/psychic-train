@@ -6,6 +6,13 @@ const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
 
+const extractToken = (req) => {
+  const token = req.headers["authorization"].replace("Bearer ", "");
+  const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+  console.log("token:", decoded);
+  return decoded;
+};
+
 const getAllUser = async (req, res) => {
   try {
     // Fetch all users
@@ -64,8 +71,9 @@ const deleteUser = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    // Fetch all users
-    const users = await User.find({ userNAME: req.body.username });
+    // F
+    const decoded = extractToken(req);
+    const users = await User.find({ userNAME: decoded.username });
 
     const userDetailsPromises = users.map(async (user) => {
       const userProfile = await Profile.findOneAndUpdate(
