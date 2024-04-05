@@ -71,7 +71,6 @@ const deleteUser = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    // F
     const decoded = extractToken(req);
     const users = await User.find({ userNAME: decoded.username });
 
@@ -180,32 +179,24 @@ const login = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    const fullProfile = {};
-    const user = await User.findOne({ userNAME: req.body.username });
-    if (!user) {
-      return res.status(400).json({ status: "error", msg: "user not found" });
-    }
+    const decoded = extractToken(req);
+    const users = await User.find({ userNAME: decoded.username });
 
-    fullProfile.username = user.userNAME;
-    fullProfile.email = user.userEMAIL;
-    fullProfile.gender = user.userGENDER;
+    const userDetailsPromises = users.map(async (user) => {
+      const userProfile = await Profile.findOne({ userID: user._id });
+      const userAuth = await Auth.findOne({ userID: user._id });
 
-    const profile = await Profile.findOne({ userID: user._id });
+      return {
+        userInfo: user,
+        userProfile,
+        userAuth,
+      };
+    });
 
-    if (!profile) {
-      return res
-        .status(400)
-        .json({ status: "error", msg: "profile not found" });
-    }
-
-    fullProfile.bio = profile.bio ? "" : profile.bio;
-    fullProfile.profilepicture = profile.profilePICTURE
-      ? ""
-      : profile.profilePICTURE;
-
-    res.json(fullProfile);
+    const userDetails = await Promise.all(userDetailsPromises);
+    res.json(userDetails);
   } catch (error) {
-    return res.status(400).json({ status: "error", msg: "get user failed" });
+    console.error("Error Profile user is not Found:", error);
   }
 };
 
