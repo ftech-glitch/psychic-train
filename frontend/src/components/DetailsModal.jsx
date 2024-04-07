@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom";
 import styles from "./Details.module.css";
 import UpdateForm from "./UpdateForm";
@@ -6,11 +6,29 @@ import glass from "./glass.png";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
-const OverLay = ({ fetchBreweries, setShowUpdateModal, brewery }) => {
+const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
   const [editedBrewery, setEditedBrewery] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  // fetch brewery list
+  const fetchBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+      setLoading(false);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
 
   // close modal
   const handleCloseModal = () => {
@@ -22,27 +40,27 @@ const OverLay = ({ fetchBreweries, setShowUpdateModal, brewery }) => {
     const { name, value } = e.target;
     setEditedBrewery((prevBrewery) => ({
       ...prevBrewery,
-      fields: {
-        ...prevBrewery.fields,
-        [name]: value,
-      },
+      [name]: value,
     }));
+    console.log("edited brewery", editedBrewery);
   };
 
   // update brewery
   const handleSaveChanges = async () => {
     const res = await fetchData(
-      "/api/brewery" + brewery.id,
+      `/api/brewery/${brewery._id}`,
       "PATCH",
       editedBrewery,
       userCtx.accessToken
     );
 
+    console.log("fetch edited brewery", res);
+
     if (res.ok) {
-      console.log("update brewery");
       // update local state or trigger a refresh of brewery data
       fetchBreweries();
       handleCloseModal();
+      console.log("updated");
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -52,7 +70,7 @@ const OverLay = ({ fetchBreweries, setShowUpdateModal, brewery }) => {
   // delete brewery
   const handleDelete = async () => {
     const res = await fetchData(
-      `/api/brewery/${brewery.id}`,
+      `/api/brewery/${brewery._id}`,
       "DELETE",
       undefined,
       userCtx.accessToken
@@ -61,6 +79,7 @@ const OverLay = ({ fetchBreweries, setShowUpdateModal, brewery }) => {
     if (res.ok) {
       fetchBreweries();
       handleCloseModal();
+      console.log("deleted");
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -194,13 +213,19 @@ const OverLay = ({ fetchBreweries, setShowUpdateModal, brewery }) => {
   );
 };
 
-const DetailsModal = ({ fetchBreweries, brewery, setShowUpdateModal }) => {
+const DetailsModal = ({
+  breweries,
+  setBreweries,
+  brewery,
+  setShowUpdateModal,
+}) => {
   return (
     <>
       {ReactDOM.createPortal(
         <OverLay
-          fetchBreweries={fetchBreweries}
           brewery={brewery}
+          breweries={breweries}
+          setBreweries={setBreweries}
           setShowUpdateModal={setShowUpdateModal}
         ></OverLay>,
         document.querySelector("#modal-root")

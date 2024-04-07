@@ -93,11 +93,11 @@ const Search = (props) => {
       {showUpdateModal && (
         <DetailsModal
           brewery={selectedBrewery}
+          setBreweries={setBreweries}
+          breweries={breweries}
           setShowUpdateModal={setShowUpdateModal}
-          fetchBreweries={props.fetchBreweries}
           handleCloseModal={handleCloseModal}
           setEditMode={setEditMode}
-          formatNumber={props.formatNumber}
         ></DetailsModal>
       )}
       <main>
