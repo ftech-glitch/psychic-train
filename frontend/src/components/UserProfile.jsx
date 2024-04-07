@@ -22,24 +22,24 @@ const UserProfile = (props) => {
                     alignItems: "center",
                 }}>
                     {/* Profile Photo */}
-                    <Grid item xs={12} sx={{ padding: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <Avatar sx={{ bgcolor: 'white', width: 200, height: 200, marginBottom: 5 }}>
+                    <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <Avatar sx={{ bgcolor: 'white', width: 100, height: 100, marginBottom: 5 }}>
                             <img src="https://i.pravatar.cc/200"></img>
                         </Avatar>
                     </Grid>
 
                     {/* Username, Email, and Gender */}
-                    <Grid item xs={12} sx={{ padding: 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                        <Typography variant="h2">{`${userCtx.userProfile.username}`}</Typography>
+                    <Grid item xs={12} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <Typography variant="h3">{`${userCtx.userProfile.username}`}</Typography>
                         <Typography variant="h6">{`${userCtx.userProfile.email}`}</Typography>
                         <Typography variant="h6">{`${userCtx.userProfile.gender}`}</Typography>
                     </Grid>
 
                     {/* Bio */}
                     {userCtx.userProfile.bio && (
-                        <Grid item xs={12} sx={{ padding: 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            <Typography variant="h3">About me</Typography>
-                            <Typography variant="h4">{`${userCtx.userProfile.bio}`}</Typography>
+                        <Grid item xs={12} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                            <Typography variant="h4">About me</Typography>
+                            <Typography variant="h5">{`${userCtx.userProfile.bio}`}</Typography>
                         </Grid>
                     )}
                 </Grid>

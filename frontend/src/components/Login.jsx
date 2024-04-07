@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import { jwtDecode } from "jwt-decode";
@@ -32,10 +32,10 @@ const Login = (props) => {
 
     const usernameRef = useRef('');
     const passwordRef = useRef('');
-    // const [userProfile, setUserProfile] = useState({});
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        const completeProfile = {};
 
         const res = await fetchData("/auth/login", "POST", { username: usernameRef.current.value, password: passwordRef.current.value });
 
@@ -44,20 +44,26 @@ const Login = (props) => {
             const decoded = jwtDecode(res.data.access);
             userCtx.setRole(decoded.role);
 
-            // const profile = await fetchData("/auth/users/userprofile", "POST", { username: usernameRef.current.value }, userCtx.accessToken);
-            const profile = await fetchData("/auth/users/userprofile", "POST", { username: usernameRef.current.value });
+            const profile = await fetchData("/auth/users/profile", "GET", undefined, res.data.access);
 
             if (profile.ok) {
-                userCtx.setUserProfile(profile.data)
-                // setUserProfile(profile.data);
+                completeProfile.username = profile.data.userInfo.userNAME;
+                completeProfile.email = profile.data.userInfo.userEMAIL;
+                completeProfile.gender = profile.data.userInfo.userGENDER;
+                completeProfile.bio = profile.data.userProfile.bio ? profile.data.userProfile.bio : "";
+
+                userCtx.setUserProfile(completeProfile);
             } else {
                 alert(JSON.stringify(profile.data));
                 console.log(profile.data);
             }
+
+
         } else {
             alert(JSON.stringify(res.data));
         }
     };
+
 
     return (
         <ThemeProvider theme={props.theme}>
