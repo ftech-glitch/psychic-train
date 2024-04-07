@@ -21,7 +21,7 @@ const Home = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [allBreweries, setAllBreweries] = useState([]);
   const [loading, setLoading] = useState(true);
-  //conflict 
+  //conflict
   const [hasMore, setHasMore] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const userCtx = useContext(UserContext);
@@ -48,7 +48,6 @@ const Home = (props) => {
   useEffect(() => {
     fetchBreweries();
   }, []);
-
 
   // fetch brewery list
   const fetchBreweries = async () => {
