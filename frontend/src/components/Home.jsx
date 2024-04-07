@@ -47,6 +47,7 @@ const Home = (props) => {
   // fetch brewery list when component mounts
   useEffect(() => {
     fetchBreweries();
+    console.log("fetch breweries", breweries);
   }, []);
 
   // fetch brewery list
@@ -158,20 +159,8 @@ const Home = (props) => {
 
   return (
     <>
-      {showReview && (
-        <RateAndReview
-          breweries={breweries}
-          setShowReview={setShowReview}
-          setShowAdd={setShowAdd}
-        />
-      )}
-      {showAdd && (
-        <Add
-          fetchBreweries={fetchBreweries}
-          setShowReview={setShowReview}
-          setShowAdd={setShowAdd}
-        />
-      )}
+      {showReview && <RateAndReview breweries={breweries} />}
+      {showAdd && <Add fetchBreweries={fetchBreweries} />}
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />
