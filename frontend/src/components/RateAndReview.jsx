@@ -1,13 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
 
-const RateAndReview = ({ breweries }) => {
+const RateAndReview = () => {
   const [selectedBrewery, setSelectedBrewery] = useState("");
+  const [breweries, setBreweries] = useState([]);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
+  const [loading, setLoading] = useState(true);
+  const userCtx = useContext(UserContext);
+  const fetchData = useFetch();
+
+  useEffect(() => {
+    fetchBreweries();
+    console.log("fetch breweries", breweries);
+  }, []);
+
+  // fetch brewery list
+  const fetchBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+      setLoading(false);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
 
   const handleBreweryChange = (event) => {
     setSelectedBrewery(event.target.value);
