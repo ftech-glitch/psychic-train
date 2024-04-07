@@ -20,10 +20,27 @@ function App() {
   useEffect(() => {
     accessToken.length !== 0 ? setIsSignedIn(true) : setIsSignedIn(false);
   }, [accessToken.length])
+  
+  /*
+        <UserContext.Provider
+        value={{
+          accessToken,
+          setAccessToken,
+          role,
+          setRole,
+          userProfile,
+          setUserProfile,
+        }}
+      >
+   */
 
   return (
     <>
+
       <UserContext.Provider value={{ accessToken, setAccessToken, role, setRole, userProfile, setUserProfile, isSignedIn, setIsSignedIn }}>
+
+
+
         <NavBar></NavBar>
         {accessToken.length > 0 && (
           <Routes>

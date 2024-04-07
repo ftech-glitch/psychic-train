@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
 import glass from "./glass.png";
@@ -14,17 +14,22 @@ import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import Search from "./Search";
 import RateAndReview from "./RateAndReview";
+import Add from "./Add";
 
 const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [allBreweries, setAllBreweries] = useState([]);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  //conflict 
   const [hasMore, setHasMore] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const userCtx = useContext(UserContext);
   const [breweries, setBreweries] = useState([]);
   const fetchData = useFetch();
+  const [showReview, setShowReview] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const location = useLocation();
 
   const defaultTheme = createTheme();
   const darkTheme = createTheme({
@@ -56,6 +61,7 @@ const Home = (props) => {
     if (res.ok) {
       setBreweries(res.data);
       setAllBreweries(res.data);
+      setLoading(false);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -138,17 +144,35 @@ const Home = (props) => {
     return <p className="modal-text">Website: -</p>;
   };
 
-  <Search fetchBreweries={fetchBreweries} />;
-
-  <RateAndReview
-    fetchBreweries={fetchBreweries}
-    breweries={breweries}
-    setBreweries={setBreweries}
-    allBreweries={allBreweries}
-  />;
+  useEffect(() => {
+    if (location.pathname === "/review") {
+      setShowReview(true);
+      setShowAdd(false);
+    } else if (location.pathname === "/add") {
+      setShowAdd(true);
+      setShowReview(false);
+    } else {
+      setShowReview(false);
+      setShowAdd(false);
+    }
+  }, [location]);
 
   return (
     <>
+      {showReview && (
+        <RateAndReview
+          breweries={breweries}
+          setShowReview={setShowReview}
+          setShowAdd={setShowAdd}
+        />
+      )}
+      {showAdd && (
+        <Add
+          fetchBreweries={fetchBreweries}
+          setShowReview={setShowReview}
+          setShowAdd={setShowAdd}
+        />
+      )}
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />
@@ -221,7 +245,6 @@ const Home = (props) => {
           </Box>
         </Grid>
       </ThemeProvider>
-
       {/* random brewery modal */}
       {randomBrewery && showModal && (
         <div className={styles.backdrop}>
