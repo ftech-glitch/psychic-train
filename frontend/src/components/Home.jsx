@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
 import glass from "./glass.png";
@@ -30,6 +30,8 @@ const Home = (props) => {
   const [showReview, setShowReview] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const location = useLocation();
+
+  const navigate = useNavigate();
 
   const defaultTheme = createTheme();
   const darkTheme = createTheme({
@@ -198,16 +200,19 @@ const Home = (props) => {
                   Generate a random brewery
                 </Button>
               </Grid>
-              <Grid item>
-                <Button
-                  href="/search"
-                  variant="contained"
-                  color="primary"
-                  role="button"
-                >
-                  Search for breweries
-                </Button>
-              </Grid>
+              {userCtx.isSignedIn && (
+                <Grid item>
+                  <Button
+                    // href="/search"
+                    variant="contained"
+                    color="primary"
+                    role="button"
+                    onClick={() => { navigate('/search') }}
+                  >
+                    Search for breweries
+                  </Button>
+                </Grid>
+              )}
             </Grid>
 
             <Grid
