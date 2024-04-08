@@ -50,45 +50,78 @@ export default function SignUp(props) {
     const [selectedFile, setSelectedFile] = useState(null);
 
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+
+            let reader = new FileReader();
+            reader.onload = function () {
+                setProfilePic(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
-    const handleFileUpload = () => {
-        let reader = new FileReader();
+    // const handleFileUpload = () => {
+    //     let reader = new FileReader();
 
-        reader.onload = function () {
-            const base64String = reader.result;
-            setProfilePic(base64String);
-        };
+    //     reader.onload = function () {
+    //         const base64String = reader.result;
+    //         setProfilePic(base64String);
+    //     };
 
-        reader.onerror = function (error) {
-            console.error("Error reading file:", error);
-        };
+    //     reader.onerror = function (error) {
+    //         console.error("Error reading file:", error);
+    //     };
 
-        reader.readAsDataURL(selectedFile);
-    };
-
+    //     reader.readAsDataURL(selectedFile);
+    // };
 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // handleFileUpload();
+        if (!usernameRef.current.value || !passwordRef.current.value || !emailRef.current.value || !gender) {
+            alert('Please fill out all required fields.');
+            return;
+        }
 
+        // Use JSON - Profile pic upload not working
         const outgoingData = {
             username: usernameRef.current.value,
             password: passwordRef.current.value,
             email: emailRef.current.value,
-            gender: gender
+            gender: gender,
+            profile: profilePic
         };
 
         if (bioRef.current.value) {
             outgoingData.bio = bioRef.current.value;
         }
 
+        // Use FormData
+        // const outgoingData = new FormData();
+
+        // outgoingData.append('username', usernameRef.current.value);
+        // outgoingData.append('password', passwordRef.current.value);
+        // outgoingData.append('email', emailRef.current.value);
+        // outgoingData.append('gender', gender);
+
         // if (profilePic) {
-        //     outgoingData.profile = profilePic;
+        //     outgoingData.append('profile', profilePic);
         // }
+
+        // if (bioRef.current.value) {
+        //     outgoingData.append('bio', bioRef.current.value);
+        // }
+
+
+        // const res = await fetch("/auth/register", outgoingData, {
+        //     header: {
+        //         "Content-Type": "multipart/form-data",
+        //     },
+        //     method: "PUT",
+        // });
 
         const res = await fetchData("/auth/register", "PUT", outgoingData);
 
@@ -99,6 +132,8 @@ export default function SignUp(props) {
             passwordRef.current.value = '';
             emailRef.current.value = '';
             bioRef.current.value = '';
+            setProfilePic('');
+            setSelectedFile(null);
         }
     };
 
