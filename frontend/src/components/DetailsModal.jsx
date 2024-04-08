@@ -10,7 +10,16 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
-  const [editedBrewery, setEditedBrewery] = useState({});
+  const [editedBrewery, setEditedBrewery] = useState({
+    Name: brewery.Name,
+    Type: brewery.Type,
+    City: brewery.City,
+    State: brewery.State,
+    Address: brewery.Address,
+    Postal: brewery.Postal,
+    Contact: brewery.Contact,
+    Website: brewery.Website,
+  });
   const [loading, setLoading] = useState(true);
 
   // fetch brewery list
@@ -36,31 +45,29 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   };
 
   // handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name, value) => {
     setEditedBrewery((prevBrewery) => ({
       ...prevBrewery,
       [name]: value,
     }));
-    console.log("edited brewery", editedBrewery);
   };
 
   // update brewery
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (id, payload) => {
     const res = await fetchData(
-      `/api/brewery/${brewery._id}`,
+      `/api/brewery/${id}`,
       "PATCH",
-      editedBrewery,
+      payload,
       userCtx.accessToken
     );
 
     console.log("fetch edited brewery", res);
+    console.log("sending payload", payload);
 
     if (res.ok) {
       // update local state or trigger a refresh of brewery data
       fetchBreweries();
       handleCloseModal();
-      console.log("updated");
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -172,6 +179,8 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
             handleInputChange={handleInputChange}
             handleSaveChanges={handleSaveChanges}
             handleCancel={handleCancel}
+            editedBrewery={editedBrewery}
+            setEditedBrewery={setEditedBrewery}
           />
         ) : (
           // details modal
@@ -181,7 +190,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                 <img src={glass} alt="glass" className="glass" />
               </div>
               <div className="col-md-6 text-center">
-                <h5 className="random-brewery">{brewery.name}</h5>
+                <h5 className="random-brewery">{brewery.Name}</h5>
               </div>
               <div className="col-md-3 text-center">
                 <img src={glass} alt="glass" className="glass" />
