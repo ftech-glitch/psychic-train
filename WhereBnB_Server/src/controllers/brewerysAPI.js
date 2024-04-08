@@ -46,19 +46,18 @@ const createBrewery = async (req, res) => {
 //Update the brewery base on ID
 
 const patchBrewery = async (req, res) => {
-  console.log("received", req.body.Name);
   try {
     const response = await Brewery.findByIdAndUpdate(
       req.params.id,
       {
-        Name: req.body.Name,
-        Type: req.body.Type,
-        City: req.body.City,
-        State: req.body.State,
-        Address: req.body.Address,
-        Postal: req.body.Postal,
-        Contact: req.body.Contact,
-        Website: req.body.Website,
+        Name: req.body.name,
+        Type: req.body.type,
+        City: req.body.city,
+        State: req.body.state,
+        Address: req.body.address,
+        Postal: req.body.postal,
+        Contact: req.body.contact,
+        Website: req.body.website,
       },
       { new: true } // to return the updated document
     );
@@ -72,6 +71,30 @@ const patchBrewery = async (req, res) => {
     res.status(500).json({ status: "Error", msg: "Internal server error" });
   }
 };
+
+// const patchBrewery = async (req, res) => {
+//   const response = await Brewery.findByIdAndUpdate(
+//     req.params.id,
+//     {
+//       Name: req.body.name,
+//       Type: req.body.type,
+//       City: req.body.city,
+//       State: req.body.state,
+//       Address: req.body.address,
+//       Postal: req.body.postal,
+//       Contact: req.body.contact,
+//       Website: req.body.website,
+//     },
+
+//     res.json(patchBrewery)
+//   );
+// if (response.ok) {
+//   console.log("Successfully Update the Brewery From Databse");
+//   res.json({ status: "Success", msg: `Brewery Updated ${response}` });
+//   return;
+// };
+//   res.json({ status: "Unable to Update", msg: `Brewery Updated ${response}` });
+// };
 
 //Remove a Brewery from the Database base on id
 const deleteBrewery = async (req, res) => {
