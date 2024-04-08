@@ -55,7 +55,6 @@ const deleteUser = async (req, res) => {
     }
     await Profile.deleteOne({ userID: user._id });
     await Auth.deleteOne({ userID: user._id });
-
     await User.findByIdAndDelete(user._id);
 
     console.log(`User account deleted for userID: ${user._id}`);
@@ -72,26 +71,44 @@ const deleteUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const decoded = extractToken(req);
-    const users = await User.find({ userNAME: decoded.username });
+    // Ensure that the query matches your database schema. This example assumes `username` is the correct field.
+    const users = await User.find({ username: decoded.username });
+
+    let imgSrc = "";
+    const temp = {};
+    if (req.file) {
+      // Convert the uploaded file into a Base64 string.
+      //const imgBase64 = req.file.buffer.toString("base64");
+      const imgBase64 = Buffer.from(req.file.buffer, "base64");
+      //imgSrc = `data:${req.file.mimetype};base64,${imgBase64}`;
+      console.log("image url", imgBase64);
+      temp["picture"] = imgBase64; // Add 'picture' to the update object if an image was uploaded.
+    } else {
+      console.log("No image uploaded");
+    }
 
     const userDetailsPromises = users.map(async (user) => {
+      // Apply the update. Here, `temp` might include the 'picture' if an image was uploaded.
       const userProfile = await Profile.findOneAndUpdate(
         { userID: user._id },
-        { $set: req.body },
+        { $set: temp },
         { new: true }
       );
-      return {
-        userProfile,
-      };
+      return userProfile; // Adjusted for clarity.
     });
 
     const userDetails = await Promise.all(userDetailsPromises);
-    res.json({
-      status: "ok",
-      msg: `User Profile has been updated: ${userDetails}`,
-    });
+    if (userDetails)
+      res.json({
+        status: "ok",
+        msg: "User Profile(s) have been updated.",
+      });
   } catch (error) {
-    console.error("Error updateUserProfile user details:", error);
+    console.error("Error updating user profile details:", error);
+    res.status(500).json({
+      status: "error",
+      msg: "An error occurred during the profile update.",
+    });
   }
 };
 
@@ -127,7 +144,7 @@ const register = async (req, res) => {
     await Profile.create({
       userID: newUser._id, // Associate the Profile with the User
       bio: req.body.bio,
-      profilePICTURE: req.body.profile,
+      profile: req.body.profile,
     });
 
     res.json({
@@ -211,6 +228,7 @@ const getUserProfile = async (req, res) => {
     };
 
     console.log(userDetails);
+
     res.json(userDetails);
   } catch (error) {
     console.error("Error fetching user details:", error);
