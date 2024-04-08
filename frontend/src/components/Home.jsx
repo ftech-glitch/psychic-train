@@ -147,10 +147,7 @@ const Home = (props) => {
   };
 
   useEffect(() => {
-    if (location.pathname === "/review") {
-      setShowReview(true);
-      setShowAdd(false);
-    } else if (location.pathname === "/add") {
+    if (location.pathname === "/add") {
       setShowAdd(true);
       setShowReview(false);
     } else {
@@ -161,7 +158,6 @@ const Home = (props) => {
 
   return (
     <>
-      {showReview && <RateAndReview breweries={breweries} />}
       {showAdd && <Add fetchBreweries={fetchBreweries} />}
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
