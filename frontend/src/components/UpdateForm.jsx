@@ -6,8 +6,10 @@ const UpdateForm = ({
   handleInputChange,
   handleSaveChanges,
   handleCancel,
+  editedBrewery,
+  setEditedBrewery,
 }) => {
-  console.log(brewery);
+  console.log(editedBrewery);
 
   return (
     <div>
@@ -17,8 +19,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Name}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Name}
+          onChange={(e) => handleInputChange("Name", e.target.value)}
         />
       </div>
       <div className="row">
@@ -26,8 +28,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Type}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Type}
+          onChange={(e) => handleInputChange("Type", e.target.value)}
         />
       </div>
       <div className="row">
@@ -35,8 +37,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.City}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.City}
+          onChange={(e) => handleInputChange("City", e.target.value)}
         />
       </div>
       <div className="row">
@@ -44,8 +46,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.State}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.State}
+          onChange={(e) => handleInputChange("State", e.target.value)}
         />
       </div>
       <div className="row">
@@ -53,8 +55,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Address}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Address}
+          onChange={(e) => handleInputChange("Address", e.target.value)}
         />
       </div>
       <div className="row">
@@ -62,8 +64,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Postal}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Postal}
+          onChange={(e) => handleInputChange("Postal", e.target.value)}
         />
       </div>
       <div className="row">
@@ -71,8 +73,8 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Contact}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Contact}
+          onChange={(e) => handleInputChange("Contact", e.target.value)}
         />
       </div>
       <div className="row">
@@ -80,13 +82,19 @@ const UpdateForm = ({
         <input
           className="col-md-6"
           type="text"
-          defaultValue={brewery.Website}
-          onChange={handleInputChange}
+          defaultValue={editedBrewery.Website}
+          onChange={(e) => handleInputChange("Website", e.target.value)}
         />
       </div>
       <br />
       <div className={styles.buttonGroup}>
-        <button className={styles.modalButton} onClick={handleSaveChanges}>
+        <button
+          className={styles.modalButton}
+          onClick={() => {
+            console.log("Onclick update", editedBrewery);
+            handleSaveChanges(brewery._id, editedBrewery);
+          }}
+        >
           save changes
         </button>
         <button className={styles.modalButton} onClick={handleCancel}>
