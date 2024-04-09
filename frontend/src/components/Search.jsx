@@ -14,16 +14,14 @@ const Search = (props) => {
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
 
-  const nameRef = useRef("");
-
   // search for breweries by name
   const searchBreweries = async () => {
     setLoading(true);
     const res = await fetchData(
-      "/api/brewery",
+      "/api/brewery/search",
       "POST",
       {
-        Name: nameRef.current.value,
+        name: input,
       },
       userCtx.accessToken
     );

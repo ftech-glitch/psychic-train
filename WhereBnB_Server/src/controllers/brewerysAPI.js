@@ -11,6 +11,21 @@ const getBrewery = async (req, res) => {
   res.json(allBrewery);
 };
 
+// search for brewery by name
+const searchBreweryByName = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const breweries = await Brewery.find({
+      Name: { $regex: name, $options: "i" },
+    });
+
+    res.json({ success: true, data: breweries });
+  } catch (error) {
+    console.error("error searching breweries by name:", error);
+  }
+};
+
 //get Specific Brewery from database
 const postBrewery = async (req, res) => {
   const theBrewery = await Brewery.find(req.body);
@@ -249,4 +264,5 @@ module.exports = {
   getRating,
   getReview,
   favouriteBrewery,
+  searchBreweryByName,
 };
