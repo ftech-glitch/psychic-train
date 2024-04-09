@@ -8,6 +8,7 @@ const {
   patchBrewery,
   deleteBrewery,
   addRatingAndReview,
+  favouriteBrewery
 } = require("../controllers/brewerysAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 
@@ -44,5 +45,8 @@ router.delete("/brewery/:id", deleteBrewery);
 
 // add rate and review
 router.put("/brewery/:id/review", addRatingAndReview);
+
+// Favourite
+router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
 
 module.exports = router;
