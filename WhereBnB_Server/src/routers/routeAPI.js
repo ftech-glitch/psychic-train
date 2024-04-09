@@ -11,6 +11,7 @@ const {
   addRating,
   getRating,
   getReview,
+  favouriteBrewery
 } = require("../controllers/brewerysAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 
@@ -51,5 +52,8 @@ router.put("/brewery/rating/:id", addRating);
 
 //add review review
 router.put("/brewery/review/:id", addReview);
+
+// Favourite
+router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
 
 module.exports = router;

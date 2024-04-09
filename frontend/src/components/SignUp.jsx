@@ -1,5 +1,5 @@
 // import * as React from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -21,9 +21,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import glass from "./glass.png";
-import cheers from "./cheers.png";
 import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
+import { jwtDecode } from "jwt-decode";
 
 function Copyright(props) {
     return (
@@ -38,45 +38,32 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignUp(props) {
+const SignUp = (props) => {
+    const userCtx = useContext(UserContext);
     const fetchData = useFetch();
     const usernameRef = useRef('');
     const passwordRef = useRef('');
     const emailRef = useRef('');
     const bioRef = useRef('');
-    const [profilePic, setProfilePic] = useState('');
+    // const [profilePic, setProfilePic] = useState('');
     const [gender, setGender] = useState('');
+    // const [selectedFile, setSelectedFile] = useState(null);
 
-    const [selectedFile, setSelectedFile] = useState(null);
+    // const handleFileChange = (event) => {
+    //     const file = event.target.files[0];
+    //     if (file) {
+    //         setSelectedFile(file);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-
-            let reader = new FileReader();
-            reader.onload = function () {
-                setProfilePic(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    // const handleFileUpload = () => {
-    //     let reader = new FileReader();
-
-    //     reader.onload = function () {
-    //         const base64String = reader.result;
-    //         setProfilePic(base64String);
-    //     };
-
-    //     reader.onerror = function (error) {
-    //         console.error("Error reading file:", error);
-    //     };
-
-    //     reader.readAsDataURL(selectedFile);
+    //         let reader = new FileReader();
+    //         reader.onload = function () {
+    //             setProfilePic(reader.result);
+    //             console.log(profilePic)
+    //         };
+    //         // reader.readAsText(file);
+    //         reader.readAsDataURL(file);
+    //         // reader.readAsArrayBuffer(file);
+    //     }
     // };
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -135,6 +122,68 @@ export default function SignUp(props) {
             setProfilePic('');
             setSelectedFile(null);
         }
+    };
+
+    const testHandleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!usernameRef.current.value || !passwordRef.current.value) {
+            alert('Please fill out all required fields.');
+            return;
+        }
+
+        const completeProfile = {};
+
+        const resLogin = await fetchData("/auth/login", "POST", { username: usernameRef.current.value, password: passwordRef.current.value });
+
+        if (resLogin.ok) {
+            userCtx.setAccessToken(resLogin.data.access);
+            const decoded = jwtDecode(resLogin.data.access);
+            userCtx.setRole(decoded.role);
+
+            const profile = await fetchData("/auth/users/profile", "GET", undefined, resLogin.data.access);
+
+            if (profile.ok) {
+                completeProfile.username = profile.data.userInfo.userNAME;
+                completeProfile.email = profile.data.userInfo.userEMAIL;
+                completeProfile.gender = profile.data.userInfo.userGENDER;
+                completeProfile.bio = profile.data.userProfile.bio ? profile.data.userProfile.bio : "";
+
+                userCtx.setUserProfile(completeProfile);
+            } else {
+                throw new Error(JSON.stringify(profile.data))
+            }
+        } else {
+            throw new Error(JSON.stringify(resLogin.data))
+        }
+
+        const profileData = new FormData();
+        profileData.append('image', profilePic);
+
+
+        const profileRes = await fetchData("/auth/users/profile", "POST", profileData, userCtx.accessToken);
+        // const profileRes = await fetch(import.meta.env.VITE_SERVER + "/auth/users/profile", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "multipart/form-data",
+        //         Authorization: "Bearer " + userCtx.accessToken,
+        //     },
+        //     body: profileData
+        // })
+
+        if (!profileRes.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const responseData = await profileRes.json();
+        console.log(responseData);
+        // console.log("profile photo uploaded!");
+        // setProfilePic('');
+        // setSelectedFile(null);
+        // usernameRef.current.value = '';
+        // passwordRef.current.value = '';
+        // emailRef.current.value = '';
+        // bioRef.current.value = '';
     };
 
 
@@ -214,7 +263,7 @@ export default function SignUp(props) {
                                             <FormControlLabel value="non-binary" control={<Radio />} label="Non-binary" />
                                             <FormControlLabel value="other" control={<Radio />} label="Other" />
                                         </RadioGroup>
-                                        <TextField
+                                        {/* <TextField
                                             value={selectedFile ? selectedFile.name : ''}
                                             label="Upload Profile Picture"
                                             InputProps={{
@@ -230,7 +279,7 @@ export default function SignUp(props) {
                                                     </IconButton>
                                                 ),
                                             }}
-                                        />
+                                        /> */}
                                         {/* <Button variant="contained" color="primary" startIcon={<FileUploadIcon />} onClick={handleFileUpload}>
                                             Upload
                                         </Button> */}
@@ -268,3 +317,5 @@ export default function SignUp(props) {
 
     );
 }
+
+export default SignUp;

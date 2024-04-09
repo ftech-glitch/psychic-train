@@ -24,6 +24,7 @@ const userProfileSchema = new mongoose.Schema(
       type: String, // Store only base64 encoded image
       required: false,
     },
+    favourite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Favourite" }],
   },
   {
     collection: "Profile",
