@@ -3,7 +3,7 @@ const Rating = require("../models/Features/UserRatSchema");
 const Review = require("../models/Features/UserRevSchema");
 const User = require("../models/Authentications/UserSchema");
 const Favourite = require("../models/Features/UserFavSchema");
-const UserProfile = require('../models/Authentications/UserProfileSchema');
+const UserProfile = require("../models/Authentications/UserProfileSchema");
 
 //Get Brewery from database
 const getBrewery = async (req, res) => {
@@ -217,23 +217,26 @@ const favouriteBrewery = async (req, res) => {
 
     const userFave = new Favourite({
       userID: user._id,
-      breweryID: brewery._id
+      breweryID: brewery._id,
     });
 
     await userFave.save();
 
-    const response = await UserProfile.findOneAndUpdate({ userID: user._id }, { $push: { favourite: userFave._id } });
-    console.log(response)
+    const response = await UserProfile.findOneAndUpdate(
+      { userID: user._id },
+      { $push: { favourite: userFave._id } }
+    );
+    console.log(response);
 
     res.json({
       status: "Success",
-      msg: "Brewery Favourited"
+      msg: "Brewery Favourited",
     });
   } catch (error) {
     console.error("Error favoriting brewery:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 module.exports = {
   getBrewery,
@@ -245,5 +248,5 @@ module.exports = {
   addReview,
   getRating,
   getReview,
-  favouriteBrewery
+  favouriteBrewery,
 };
