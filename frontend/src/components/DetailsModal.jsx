@@ -5,6 +5,9 @@ import UpdateForm from "./UpdateForm";
 import glass from "./glass.png";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import IconButton from '@mui/material/IconButton';
 
 const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
@@ -169,6 +172,27 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
     return <p className="modal-text">Website: -</p>;
   };
 
+  const favouriteBrewery = async () => {
+    try {
+      const requestBody = {
+        "username": userCtx.userProfile.username,
+        "breweryid": brewery._id
+      }
+
+      const res = await fetchData("/api/brewery/favourite", "PUT", requestBody, userCtx.accessToken);
+
+      if (res.ok) {
+        console.log("WOOHOO");
+      } else {
+        alert(JSON.stringify(res.data));
+        console.log(res.data);
+      }
+
+    } catch (error) {
+      console.error("Error favouriting brewery: ", error.message);
+    }
+  }
+
   return (
     <div className={styles.backdrop}>
       <div className={styles.modal}>
@@ -186,14 +210,21 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
           // details modal
           <div className="row align-items-center">
             <div className="row align-items-center">
-              <div className="col-md-3 text-center">
+              <div className="col-md-2 text-center">
                 <img src={glass} alt="glass" className="glass" />
               </div>
-              <div className="col-md-6 text-center">
+              <div className="col-md-7 text-center">
                 <h5 className="random-brewery">{brewery.Name}</h5>
               </div>
-              <div className="col-md-3 text-center">
+              <div className="col-md-2 text-center">
                 <img src={glass} alt="glass" className="glass" />
+              </div>
+              <div className="col-md-1 text-center">
+                <IconButton onClick={favouriteBrewery} aria-label="favourite">
+                  <StarBorderIcon sx={{
+                    color: "black"
+                  }} />
+                </IconButton>
               </div>
             </div>
             {renderName()}
