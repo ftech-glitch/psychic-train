@@ -1,4 +1,7 @@
 const Brewery = require("../models/BrewerySchema");
+const User = require("../models/Authentications/UserSchema");
+const Favourite = require("../models/Features/UserFavSchema");
+const UserProfile = require('../models/Authentications/UserProfileSchema');
 
 //Get Brewery from database
 const getBrewery = async (req, res) => {
@@ -121,6 +124,50 @@ const addRatingAndReview = async (res, req) => {
   }
 };
 
+const favouriteBrewery = async (req, res) => {
+  try {
+    const brewery = await Brewery.findById(req.body.breweryid);
+
+    if (!brewery) {
+      return res.status(404).json({ error: "Brewery not found" });
+    }
+
+    const user = await User.findOne({ userNAME: req.body.username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userProfile = await UserProfile.findOne({ userID: user._id });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User Profile not found" });
+    }
+
+    console.log(user);
+    console.log(brewery);
+    console.log(userProfile);
+
+    const userFave = new Favourite({
+      userID: user._id,
+      breweryID: brewery._id
+    });
+
+    await userFave.save();
+
+    const response = await UserProfile.findOneAndUpdate({ userID: user._id }, { $push: { favourite: userFave._id } });
+    console.log(response)
+
+    res.json({
+      status: "Success",
+      msg: "Brewery Favourited"
+    });
+  } catch (error) {
+    console.error("Error favoriting brewery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getBrewery,
   postBrewery,
@@ -128,4 +175,5 @@ module.exports = {
   patchBrewery,
   deleteBrewery,
   addRatingAndReview,
+  favouriteBrewery
 };

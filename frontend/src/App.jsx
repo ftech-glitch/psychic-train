@@ -38,9 +38,6 @@ function App() {
     <>
 
       <UserContext.Provider value={{ accessToken, setAccessToken, role, setRole, userProfile, setUserProfile, isSignedIn, setIsSignedIn }}>
-
-
-
         <NavBar></NavBar>
         {accessToken.length > 0 && (
           <Routes>
