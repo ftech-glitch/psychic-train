@@ -67,34 +67,59 @@ const deleteUser = async (req, res) => {
     res.status(500).send("An error deleting the user");
   }
 };
+function EstImageSize(size) {
+  const base64Multiplier = 4 / 3;
+  const base64Padding = size % 3 ? 3 - (size % 3) : 0; // Padding needed for base64
+  const estimatedSize = size * base64Multiplier + base64Padding;
+  const result = Math.ceil(estimatedSize);
+  console.log("expected result", result); // Round up to deal with any decimal
+  return result;
+}
 
 const updateUserProfile = async (req, res) => {
   try {
     const decoded = extractToken(req);
     // Ensure that the query matches your database schema. This example assumes `username` is the correct field.
-    const users = await User.find({ username: decoded.username });
-
-    let imgSrc = "";
+    const users = await User.find({ userNAME: decoded.username }); //Checked
+    if (users.length === 0) {
+      return res.status(404).json({ status: "error", msg: "User not found." });
+    }
     const temp = {};
     if (req.file) {
-      // Convert the uploaded file into a Base64 string.
-      //const imgBase64 = req.file.buffer.toString("base64");
-      const imgBase64 = Buffer.from(req.file.buffer, "base64");
-      //imgSrc = `data:${req.file.mimetype};base64,${imgBase64}`;
-      console.log("image url", imgBase64);
-      temp["picture"] = imgBase64; // Add 'picture' to the update object if an image was uploaded.
+      const imgBase64 = req.file.buffer.toString("base64");
+      const etaSize = EstImageSize(req.file.size);
+      if (etaSize != imgBase64.length) {
+        console.log(
+          `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize}`
+        );
+        res.status(500).json({
+          status: "error",
+          msg: `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize} please try again`,
+        });
+      }
+      temp["profile"] = JSON.stringify({
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        encoding: req.file.encoding,
+        mimetype: req.file.mimetype,
+        base64: imgBase64,
+        length: imgBase64.length,
+      });
+      //Debugging test
+/*       imagestring = JSON.parse(temp["profile"]);
+      console.log(imagestring); */
     } else {
       console.log("No image uploaded");
     }
 
     const userDetailsPromises = users.map(async (user) => {
-      // Apply the update. Here, `temp` might include the 'picture' if an image was uploaded.
+      console.log("find user _id", user._id);
       const userProfile = await Profile.findOneAndUpdate(
         { userID: user._id },
         { $set: temp },
         { new: true }
       );
-      return userProfile; // Adjusted for clarity.
+      return userProfile;
     });
 
     const userDetails = await Promise.all(userDetailsPromises);
