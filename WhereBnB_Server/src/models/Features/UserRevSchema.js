@@ -1,15 +1,29 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-//Manually assign _id
 const userReviewSchema = new Schema(
   {
-    //_id is reviewID as parent entities
-    _id: { type: Number, required: true, unique: true },
-    userID: { type: Number, required: true },
-    breweryID: { type: Number, required: true },
-    reviewDATE: { type: Date, required: true }, //Date only
-    reviewTIME: { type: String, required: true }, // Stored as a string; consider storing as Date if you need to manipulate this
+    // userID: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    //   required: true,
+    // },
+    reviewDATE: {
+      type: String,
+      required: true,
+    },
+    reviewTIME: {
+      type: String,
+      required: true,
+    },
+    brewery: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brewery",
+      required: true,
+      index: true,
+      unique: true,
+      sparse: true,
+    },
   },
   {
     collection: "Review",

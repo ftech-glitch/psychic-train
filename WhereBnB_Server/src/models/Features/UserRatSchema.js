@@ -3,16 +3,15 @@ const Schema = mongoose.Schema;
 
 const userRatingSchema = new Schema(
   {
-    //Require auto insert _id
-    _id: { type: Number, required: true, unique: true },
-    // Corrected: reviewID to match the Number type as in userReviewSchema
-    reviewID: {
-      type: Number, // Changed from mongoose.Schema.Types.ObjectId to Number
-      ref: "Review",
+    score: { type: String, enum: ["1", "2", "3", "4", "5"], required: true },
+    brewery: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brewery",
       required: true,
+      index: true,
       unique: true,
+      sparse: true,
     },
-    score: { type: Number, min: 1, max: 5, required: true },
   },
   {
     collection: "Rating",
