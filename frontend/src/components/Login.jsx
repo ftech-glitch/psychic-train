@@ -12,19 +12,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-
-import glass from "./glass.png";
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            <Link color="inherit" href="https://github.com/ftech-glitch/psychic-train">
-                Github Link Here!
-            </Link>{' '}
-        </Typography>
-    );
-}
-
+import Copyright from "./Copyright";
 
 const Login = (props) => {
     const fetchData = useFetch();
@@ -51,14 +39,13 @@ const Login = (props) => {
                 completeProfile.email = profile.data.userInfo.userEMAIL;
                 completeProfile.gender = profile.data.userInfo.userGENDER;
                 completeProfile.bio = profile.data.userProfile.bio ? profile.data.userProfile.bio : "";
+                completeProfile.profile = profile.data.userProfile.profile ? profile.data.userProfile.profile : "https://i.pravatar.cc/200";
 
                 userCtx.setUserProfile(completeProfile);
             } else {
                 alert(JSON.stringify(profile.data));
                 console.log(profile.data);
             }
-
-
         } else {
             alert(JSON.stringify(res.data));
         }
@@ -126,7 +113,7 @@ const Login = (props) => {
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
+                <Copyright theme={props.theme}></Copyright>
             </Container>
         </ThemeProvider>
     );

@@ -1,42 +1,10 @@
 // import * as React from 'react';
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import IconButton from '@mui/material/IconButton';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import React, { useRef, useState, useContext } from 'react';
+import { Button, CssBaseline, TextField, FormControl, FormLabel, FormControlLabel, Link, Grid, Box, Typography, Container, Radio, RadioGroup, ThemeProvider } from '@mui/material'
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
-import { jwtDecode } from "jwt-decode";
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            <Link color="inherit" href="https://github.com/ftech-glitch/psychic-train">
-                Github Link Here!
-            </Link>{' '}
-        </Typography>
-    );
-}
-
-
-const defaultTheme = createTheme();
+import Copyright from './Copyright';
+import SnackbarMessage from './SnackbarMessage';
 
 const SignUp = (props) => {
     const userCtx = useContext(UserContext);
@@ -45,25 +13,8 @@ const SignUp = (props) => {
     const passwordRef = useRef('');
     const emailRef = useRef('');
     const bioRef = useRef('');
-    // const [profilePic, setProfilePic] = useState('');
     const [gender, setGender] = useState('');
-    // const [selectedFile, setSelectedFile] = useState(null);
 
-    // const handleFileChange = (event) => {
-    //     const file = event.target.files[0];
-    //     if (file) {
-    //         setSelectedFile(file);
-
-    //         let reader = new FileReader();
-    //         reader.onload = function () {
-    //             setProfilePic(reader.result);
-    //             console.log(profilePic)
-    //         };
-    //         // reader.readAsText(file);
-    //         reader.readAsDataURL(file);
-    //         // reader.readAsArrayBuffer(file);
-    //     }
-    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -79,36 +30,11 @@ const SignUp = (props) => {
             password: passwordRef.current.value,
             email: emailRef.current.value,
             gender: gender,
-            profile: profilePic
         };
 
         if (bioRef.current.value) {
             outgoingData.bio = bioRef.current.value;
         }
-
-        // Use FormData
-        // const outgoingData = new FormData();
-
-        // outgoingData.append('username', usernameRef.current.value);
-        // outgoingData.append('password', passwordRef.current.value);
-        // outgoingData.append('email', emailRef.current.value);
-        // outgoingData.append('gender', gender);
-
-        // if (profilePic) {
-        //     outgoingData.append('profile', profilePic);
-        // }
-
-        // if (bioRef.current.value) {
-        //     outgoingData.append('bio', bioRef.current.value);
-        // }
-
-
-        // const res = await fetch("/auth/register", outgoingData, {
-        //     header: {
-        //         "Content-Type": "multipart/form-data",
-        //     },
-        //     method: "PUT",
-        // });
 
         const res = await fetchData("/auth/register", "PUT", outgoingData);
 
@@ -119,71 +45,9 @@ const SignUp = (props) => {
             passwordRef.current.value = '';
             emailRef.current.value = '';
             bioRef.current.value = '';
-            setProfilePic('');
-            setSelectedFile(null);
+            props.snackbarOperations.setSnackbarMessage("Registration Successful!");
+            props.snackbarOperations.setSnackbarOpen(true);
         }
-    };
-
-    const testHandleSubmit = async (event) => {
-        event.preventDefault();
-
-        if (!usernameRef.current.value || !passwordRef.current.value) {
-            alert('Please fill out all required fields.');
-            return;
-        }
-
-        const completeProfile = {};
-
-        const resLogin = await fetchData("/auth/login", "POST", { username: usernameRef.current.value, password: passwordRef.current.value });
-
-        if (resLogin.ok) {
-            userCtx.setAccessToken(resLogin.data.access);
-            const decoded = jwtDecode(resLogin.data.access);
-            userCtx.setRole(decoded.role);
-
-            const profile = await fetchData("/auth/users/profile", "GET", undefined, resLogin.data.access);
-
-            if (profile.ok) {
-                completeProfile.username = profile.data.userInfo.userNAME;
-                completeProfile.email = profile.data.userInfo.userEMAIL;
-                completeProfile.gender = profile.data.userInfo.userGENDER;
-                completeProfile.bio = profile.data.userProfile.bio ? profile.data.userProfile.bio : "";
-
-                userCtx.setUserProfile(completeProfile);
-            } else {
-                throw new Error(JSON.stringify(profile.data))
-            }
-        } else {
-            throw new Error(JSON.stringify(resLogin.data))
-        }
-
-        const profileData = new FormData();
-        profileData.append('image', profilePic);
-
-
-        const profileRes = await fetchData("/auth/users/profile", "POST", profileData, userCtx.accessToken);
-        // const profileRes = await fetch(import.meta.env.VITE_SERVER + "/auth/users/profile", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "multipart/form-data",
-        //         Authorization: "Bearer " + userCtx.accessToken,
-        //     },
-        //     body: profileData
-        // })
-
-        if (!profileRes.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const responseData = await profileRes.json();
-        console.log(responseData);
-        // console.log("profile photo uploaded!");
-        // setProfilePic('');
-        // setSelectedFile(null);
-        // usernameRef.current.value = '';
-        // passwordRef.current.value = '';
-        // emailRef.current.value = '';
-        // bioRef.current.value = '';
     };
 
 
@@ -200,6 +64,13 @@ const SignUp = (props) => {
                             alignItems: 'center',
                         }}
                     >
+                        <SnackbarMessage
+                            open={props.snackbarOperations.snackbarOpen}
+                            message={props.snackbarOperations.snackbarMessage}
+                            vertical="top"
+                            horizontal="right"
+                            setSnackbarOpen={props.snackbarOperations.setSnackbarOpen}
+                            setSnackbarMessage={props.snackbarOperations.setSnackbarMessage}></SnackbarMessage>
                         <Typography component="h1" variant="h5">
                             Sign up
                         </Typography>
@@ -263,26 +134,6 @@ const SignUp = (props) => {
                                             <FormControlLabel value="non-binary" control={<Radio />} label="Non-binary" />
                                             <FormControlLabel value="other" control={<Radio />} label="Other" />
                                         </RadioGroup>
-                                        {/* <TextField
-                                            value={selectedFile ? selectedFile.name : ''}
-                                            label="Upload Profile Picture"
-                                            InputProps={{
-                                                readOnly: true,
-                                                startAdornment: (
-                                                    <IconButton component="label">
-                                                        <AttachFileIcon />
-                                                        <input
-                                                            type="file"
-                                                            hidden
-                                                            onChange={handleFileChange}
-                                                        />
-                                                    </IconButton>
-                                                ),
-                                            }}
-                                        /> */}
-                                        {/* <Button variant="contained" color="primary" startIcon={<FileUploadIcon />} onClick={handleFileUpload}>
-                                            Upload
-                                        </Button> */}
                                     </FormControl>
                                 </Grid>
                             </Grid>
@@ -305,14 +156,9 @@ const SignUp = (props) => {
                             </Grid>
                         </Box>
                     </Box>
-                    <Copyright sx={{ mt: 5 }} />
-
+                    <Copyright theme={props.theme} />
                 </Container>
             </ThemeProvider >
-            {/* <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                
-            </Grid> */}
-
         </>
 
     );
