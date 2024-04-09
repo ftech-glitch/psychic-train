@@ -21,7 +21,7 @@ const userProfileSchema = new mongoose.Schema(
       required: false,
     },
     profile: {
-      type: Buffer, // Store only base64 encoded image
+      type: String, // Store only base64 encoded image
       required: false,
     },
   },
