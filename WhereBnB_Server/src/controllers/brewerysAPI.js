@@ -27,7 +27,7 @@ const getBrewery = async (req, res) => {
 //   }
 // };
 
-const searchBreweryByName = async (req, res) => {
+/* const searchBreweryByName = async (req, res) => {
   try {
     const { name } = req.body;
 
@@ -43,10 +43,12 @@ const searchBreweryByName = async (req, res) => {
     console.error("error searching breweries by name:", error);
     res.status(500).json({ success: false, error: "Internal server error" });
   }
-};
+}; */
 
 //get Specific Brewery from database
 const postBrewery = async (req, res) => {
+  console.log("postBrewery");
+  console.log("req", req.body);
   const theBrewery = await Brewery.find(req.body);
   res.json(theBrewery);
 };
@@ -86,20 +88,23 @@ const createBrewery = async (req, res) => {
 
 const patchBrewery = async (req, res) => {
   try {
+    console.log("received", req.body);
+    console.log("received id", req.params.id);
     const response = await Brewery.findByIdAndUpdate(
       req.params.id,
       {
-        Name: req.body.name,
-        Type: req.body.type,
-        City: req.body.city,
-        State: req.body.state,
-        Address: req.body.address,
-        Postal: req.body.postal,
-        Contact: req.body.contact,
-        Website: req.body.website,
+        Name: req.body.Name,
+        Type: req.body.Type,
+        City: req.body.City,
+        State: req.body.State,
+        Address: req.body.Address,
+        Postal: req.body.Postal,
+        Contact: req.body.Contact,
+        Website: req.body.Website,
       },
       { new: true } // to return the updated document
     );
+    console.log("Update Success:" + response);
     res.json({
       status: "Success",
       msg: `Brewery updated: ${response}`,
@@ -137,6 +142,7 @@ const patchBrewery = async (req, res) => {
 
 //Remove a Brewery from the Database base on id
 const deleteBrewery = async (req, res) => {
+  console.log("Delete Recevied:", req.params.id);
   await Brewery.findByIdAndDelete(req.params.id);
   res.json({ status: "Success", msg: "Brewery Deleted" });
 };

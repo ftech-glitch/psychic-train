@@ -20,8 +20,8 @@ const { authUser, authAdmin } = require("../middleware/authVerification");
 // get brewery list
 router.get("/brewery", getBrewery);
 
-// search brewery by name
-//router.post("/brewery/search", searchBreweryByName);
+/* // search brewery by name
+router.post("/brewery/search", searchBreweryByName); */
 
 //Lookup for specific Brewery send a raw body {"type":"Large"} or {"city":""}
 router.post("/brewery", authUser, postBrewery);
@@ -38,6 +38,7 @@ router.post("/brewery", authUser, postBrewery);
     "website": "test"
   }
   */
+
 router.put("/brewery", authAdmin, createBrewery);
 
 // Update base on req.params.id
