@@ -3,10 +3,12 @@ import UserContext from "../context/user";
 import useFetch from "../hooks/useFetch";
 import Home from "./Home";
 
-const Add = ({ fetchBreweries }) => {
+const Add = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
+  const [breweries, setBreweries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
   const [type, setType] = useState("");
@@ -22,9 +24,32 @@ const Add = ({ fetchBreweries }) => {
     setShowSuccess(false);
   };
 
+  // fetch brewery list when component mounts
+  useEffect(() => {
+    fetchBreweries();
+    console.log("fetch breweries", breweries);
+  }, []);
+
+  // fetch brewery list
+  const fetchBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+      setLoading(false);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
   // add new brewery
-  const handleSubmit = async () => {
-    // e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const res = await fetchData(
       "/api/brewery",
       "PUT",
