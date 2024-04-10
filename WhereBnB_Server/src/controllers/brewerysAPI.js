@@ -1,7 +1,9 @@
 const Brewery = require("../models/BrewerySchema");
+const Rating = require("../models/Features/UserRatSchema");
+const Review = require("../models/Features/UserRevSchema");
 const User = require("../models/Authentications/UserSchema");
 const Favourite = require("../models/Features/UserFavSchema");
-const UserProfile = require('../models/Authentications/UserProfileSchema');
+const UserProfile = require("../models/Authentications/UserProfileSchema");
 
 //Get Brewery from database
 const getBrewery = async (req, res) => {
@@ -105,22 +107,87 @@ const deleteBrewery = async (req, res) => {
   res.json({ status: "Success", msg: "Brewery Deleted" });
 };
 
-// add rating and review to brewery
-const addRatingAndReview = async (res, req) => {
+// get review by brewery
+const getReview = async (req, res) => {
   try {
-    const brewery = await Brewery.findById(req.params.id);
+    const breweryId = req.params.id;
+    const reviews = await Review.find({ brewery: breweryId });
+    res.json({ status: "Success", reviews: reviews });
+  } catch (error) {
+    console.error("Error fetching reviews by brewery:", error);
+  }
+};
 
+// get rating by brewery
+const getRating = async (req, res) => {
+  try {
+    const breweryId = req.params.id;
+    const ratings = await Rating.find({ brewery: breweryId });
+    res.json({ status: "Success", ratings: ratings });
+  } catch (error) {
+    console.error("Error fetching ratings by brewery:", error);
+  }
+};
+
+// add rating
+const addRating = async (req, res) => {
+  try {
+    const breweryId = req.params.id;
+    const brewery = await Brewery.findById(breweryId);
     if (!brewery) {
-      return res.status(404).json({ error: "Brewery not found" });
+      return res
+        .status(404)
+        .json({ status: "Error", msg: "Brewery not found" });
     }
 
-    brewery.rating = req.body.rating;
-    brewery.review = req.body.review;
-    await brewery.save();
+    const newRating = new Rating({
+      score: req.body.score,
+      brewery: breweryId,
+    });
+    await newRating.save();
 
-    res.status(200).json({ message: "raing and review added successfully" });
+    res.json({
+      status: "Success",
+      msg: "Rating added successfully",
+      rating: newRating,
+    });
   } catch (error) {
-    console.log("error", error);
+    console.error("Error adding rating:", error);
+  }
+};
+
+// add review
+const addReview = async (req, res) => {
+  try {
+    const breweryId = req.params.id;
+    const brewery = await Brewery.findById(breweryId);
+    if (!brewery) {
+      return res
+        .status(404)
+        .json({ status: "Error", msg: "Brewery not found" });
+    }
+
+    const reviewDate = new Date().toISOString().split("T")[0]; // Current date
+    const reviewTime = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }); // Current time
+
+    const newReview = new Review({
+      // userID: req.body.userID,
+      reviewDATE: reviewDate,
+      reviewTIME: reviewTime,
+      brewery: breweryId,
+    });
+    await newReview.save();
+
+    res.json({
+      status: "Success",
+      msg: "Review added successfully",
+      review: newReview,
+    });
+  } catch (error) {
+    console.error("Error adding review:", error);
   }
 };
 
@@ -150,23 +217,26 @@ const favouriteBrewery = async (req, res) => {
 
     const userFave = new Favourite({
       userID: user._id,
-      breweryID: brewery._id
+      breweryID: brewery._id,
     });
 
     await userFave.save();
 
-    const response = await UserProfile.findOneAndUpdate({ userID: user._id }, { $push: { favourite: userFave._id } });
-    console.log(response)
+    const response = await UserProfile.findOneAndUpdate(
+      { userID: user._id },
+      { $push: { favourite: userFave._id } }
+    );
+    console.log(response);
 
     res.json({
       status: "Success",
-      msg: "Brewery Favourited"
+      msg: "Brewery Favourited",
     });
   } catch (error) {
     console.error("Error favoriting brewery:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 module.exports = {
   getBrewery,
@@ -174,6 +244,9 @@ module.exports = {
   createBrewery,
   patchBrewery,
   deleteBrewery,
-  addRatingAndReview,
-  favouriteBrewery
+  addRating,
+  addReview,
+  getRating,
+  getReview,
+  favouriteBrewery,
 };

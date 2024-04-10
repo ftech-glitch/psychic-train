@@ -7,20 +7,20 @@ const {
   createBrewery,
   patchBrewery,
   deleteBrewery,
-  addRatingAndReview,
+  addReview,
+  addRating,
+  getRating,
+  getReview,
   favouriteBrewery
 } = require("../controllers/brewerysAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 
-/*####################### API 01 ##############################################*/
-//Remove auth if you're doing testing
+// get brewery list
 router.get("/brewery", getBrewery);
 
-/*####################### API 02 ##############################################*/
 //Lookup for specific Brewery send a raw body {"type":"Large"} or {"city":""}
 router.post("/brewery", authUser, postBrewery);
 
-/*####################### API 03 ##############################################*/
 //Upload New Brewery send a raw body :
 /* {
     "name": "test",
@@ -35,16 +35,23 @@ router.post("/brewery", authUser, postBrewery);
   */
 router.put("/brewery", authAdmin, createBrewery);
 
-/*####################### API 04 ##############################################*/
 // Update base on req.params.id
 router.patch("/brewery/:id", authAdmin, patchBrewery);
 
-/*####################### API 05 ##############################################*/
 // Delete base on req.params.id
 router.delete("/brewery/:id", deleteBrewery);
 
-// add rate and review
-router.put("/brewery/:id/review", addRatingAndReview);
+// get ratings
+router.get("/brewery/rating/:id", getRating);
+
+// get reviews
+router.get("/brewery/review/:id", getReview);
+
+// add rating
+router.put("/brewery/rating/:id", addRating);
+
+//add review review
+router.put("/brewery/review/:id", addReview);
 
 // Favourite
 router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
