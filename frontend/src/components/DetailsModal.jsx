@@ -10,11 +10,11 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import IconButton from "@mui/material/IconButton";
 import SnackbarMessage from "./SnackbarMessage";
 
-
 const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
+  const [faves, setFaves] = useState([]);
   const [editedBrewery, setEditedBrewery] = useState({
     Name: brewery.Name,
     Type: brewery.Type,
@@ -276,7 +276,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
     }
   }, [userCtx.accessToken]);
 
-
   // render the average rating of brewery as stars
   const renderRatingStars = () => {
     const filledStars = Math.round(averageRating);
@@ -351,7 +350,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                 <img src={glass} alt="glass" className="glass" />
               </div>
               <div className="col-md-1 text-center">
-
                 {!faves.includes(brewery._id) && (
                   <IconButton onClick={favouriteBrewery} aria-label="favourite">
                     <StarBorderIcon

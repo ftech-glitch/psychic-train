@@ -329,6 +329,5 @@ module.exports = {
   getRating,
   getReview,
   favouriteBrewery,
-  // searchBreweryByName,
   getAverageRating,
 };
