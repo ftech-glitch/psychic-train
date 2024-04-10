@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Details.module.css";
 import cheers from "./cheers.png";
+import background_video01 from "../img/brewery_video01.mp4";
 import glass from "./glass.png";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -162,6 +163,24 @@ const Home = (props) => {
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />
+          {/* Background video */}
+          <video
+            autoPlay
+            loop
+            muted
+            style={{
+              position: "absolute",
+              width: "100%",
+              left: "50%",
+              top: "50%",
+              height: "100%",
+              objectFit: "cover",
+              transform: "translate(-50%, -50%)",
+              zIndex: "-1",
+            }}
+          >
+            <source src={background_video01} type="video/mp4" />
+          </video>
           <Box
             sx={{
               margin: "1rem",

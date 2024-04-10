@@ -21,7 +21,7 @@ const { authUser, authAdmin } = require("../middleware/authVerification");
 router.get("/brewery", getBrewery);
 
 // search brewery by name
-router.post("/brewery/search", searchBreweryByName);
+//router.post("/brewery/search", searchBreweryByName);
 
 //Lookup for specific Brewery send a raw body {"type":"Large"} or {"city":""}
 router.post("/brewery", authUser, postBrewery);
