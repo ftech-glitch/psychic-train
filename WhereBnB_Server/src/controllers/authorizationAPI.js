@@ -88,10 +88,42 @@ const updateUserProfile = async (req, res) => {
     const receivedBase64Message = req.body.image;
     const temp = {};
 
+
     if (receivedBase64Message) {
       // const receivedBase64Image = receivedBase64Message.replace(/^data:image\/\w+;base64,/, ''); // Remove that first part of the string
 
       temp["profile"] = receivedBase64Message;
+      
+/* Conversion of the image will be done at the user side.
+
+    if (req.file) {
+      const imgBase64 = req.file.buffer.toString("base64");
+      const etaSize = EstImageSize(req.file.size);
+      if (etaSize != imgBase64.length) {
+        console.log(
+          `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize}`
+        );
+        res.status(500).json({
+          status: "error",
+          msg: `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize} please try again`,
+        });
+      }
+      temp["profile"] = JSON.stringify({
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        encoding: req.file.encoding,
+        mimetype: req.file.mimetype,
+        base64: imgBase64,
+        length: imgBase64.length,
+      });
+      //Debugging test
+      imagestring = JSON.parse(temp["profile"]);
+      console.log("req received", req);
+      
+ Edited 
+ */
+      
+      
     } else {
       console.log("No image uploaded");
     }

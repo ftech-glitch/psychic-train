@@ -35,10 +35,24 @@ const brewerySchema = new Schema(
       type: String,
       required: false, // Assuming the website might not be available for all entries
     },
+
+    ratings: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Rating",
+      },
+    ],
+
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
   },
   {
     collection: "breweryList",
   }
 );
 
-module.exports = mongoose.model("brewery", brewerySchema);
+module.exports = mongoose.model("Brewery", brewerySchema);

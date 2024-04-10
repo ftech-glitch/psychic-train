@@ -207,7 +207,9 @@ const Home = (props) => {
                     variant="contained"
                     color="primary"
                     role="button"
-                    onClick={() => { navigate('/search') }}
+                    onClick={() => {
+                      navigate("/search");
+                    }}
                   >
                     Search for breweries
                   </Button>

@@ -3,6 +3,8 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Rating from "@mui/material/Rating";
+import Stack from "@mui/material/Stack";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
@@ -69,12 +71,15 @@ const RateAndReview = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "left",
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom color="black">
         Rate and Review
       </Typography>
+      <Stack spacing={1}>
+        <Rating name="rating" defaultValue={2} precision={1} />
+      </Stack>
       <TextField
         select
         fullWidth
@@ -86,9 +91,7 @@ const RateAndReview = () => {
         }}
         sx={{ mb: 2 }}
       >
-        <option value="" disabled>
-          Select a brewery
-        </option>
+        <option value="" disabled></option>
         {breweries.map((brewery) => (
           <option key={brewery._id} value={brewery.Name}>
             {brewery.Name}
@@ -96,7 +99,7 @@ const RateAndReview = () => {
         ))}
       </TextField>
       {/* Rating input field */}
-      <TextField
+      {/* <TextField
         select
         fullWidth
         label="Rating"
@@ -112,7 +115,7 @@ const RateAndReview = () => {
             {index + 1}
           </option>
         ))}
-      </TextField>
+      </TextField> */}
       <TextField
         fullWidth
         multiline
