@@ -47,9 +47,10 @@ const getBrewery = async (req, res) => {
 
 //get Specific Brewery from database
 const postBrewery = async (req, res) => {
-  console.log("postBrewery");
-  console.log("req", req.body);
-  const theBrewery = await Brewery.find(req.body);
+  const regexName = new RegExp(req.body.Name, "i");
+
+  const theBrewery = await Brewery.find({ Name: { $regex: regexName } });
+
   res.json(theBrewery);
 };
 
@@ -328,6 +329,5 @@ module.exports = {
   getRating,
   getReview,
   favouriteBrewery,
-  searchBreweryByName,
   getAverageRating,
 };
