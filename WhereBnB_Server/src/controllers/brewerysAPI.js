@@ -237,6 +237,33 @@ const addReview = async (req, res) => {
   }
 };
 
+// get average rating by brewery
+const getAverageRating = async (req, res) => {
+  try {
+    const breweryId = req.params.id;
+    const ratings = await Rating.find({ brewery: breweryId });
+
+    let totalRating = 0;
+    let numberOfRatings = ratings.length;
+
+    // Calculate the total rating
+    ratings.forEach((rating) => {
+      totalRating += parseInt(rating.score); // Convert score to number before summing up
+    });
+
+    const averageRating =
+      numberOfRatings > 0 ? totalRating / numberOfRatings : 0;
+
+    // Round the average rating to one decimal place
+    const roundedAverageRating = Math.round(averageRating * 10) / 10;
+
+    res.json({ status: "Success", averageRating: roundedAverageRating });
+  } catch (error) {
+    console.error("Error fetching ratings by brewery:", error);
+    res.status(500).json({ status: "Error", msg: "Internal server error" });
+  }
+};
+
 const favouriteBrewery = async (req, res) => {
   try {
     const brewery = await Brewery.findById(req.body.breweryid);
@@ -296,4 +323,5 @@ module.exports = {
   getReview,
   favouriteBrewery,
   searchBreweryByName,
+  getAverageRating,
 };
