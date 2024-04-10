@@ -108,7 +108,7 @@ const Search = (props) => {
       <main>
         {/* search bar */}
         <div className="search-bar-container">
-          <div className="input-group">
+          <div className="input-group" id="txtinput">
             <input
               type="text"
               value={input}

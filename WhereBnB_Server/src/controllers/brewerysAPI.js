@@ -142,6 +142,7 @@ const patchBrewery = async (req, res) => {
 
 //Remove a Brewery from the Database base on id
 const deleteBrewery = async (req, res) => {
+  console.log("Delete Recevied:", req.params.id);
   await Brewery.findByIdAndDelete(req.params.id);
   res.json({ status: "Success", msg: "Brewery Deleted" });
 };

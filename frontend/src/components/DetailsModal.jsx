@@ -36,6 +36,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
       undefined,
       userCtx.accessToken
     );
+
     if (res.ok) {
       setBreweries(res.data);
     } else {
