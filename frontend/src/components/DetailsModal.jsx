@@ -190,7 +190,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
         alert(JSON.stringify(res.data));
         console.log(res.data);
       }
-
     } catch (error) {
       console.error("Error favouriting brewery: ", error.message);
     }
