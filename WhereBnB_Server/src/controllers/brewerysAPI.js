@@ -244,6 +244,80 @@ const addReview = async (req, res) => {
   }
 };
 
+// get average rating by brewery
+const getAverageRating = async (req, res) => {
+  try {
+    const breweryId = req.params.id;
+    const ratings = await Rating.find({ brewery: breweryId });
+
+    let totalRating = 0;
+    let numberOfRatings = ratings.length;
+
+    // Calculate the total rating
+    ratings.forEach((rating) => {
+      totalRating += parseInt(rating.score); // Convert score to number before summing up
+    });
+
+    const averageRating =
+      numberOfRatings > 0 ? totalRating / numberOfRatings : 0;
+
+    // Round the average rating to one decimal place
+    const roundedAverageRating = Math.round(averageRating * 10) / 10;
+
+    res.json({ status: "Success", averageRating: roundedAverageRating });
+  } catch (error) {
+    console.error("Error fetching ratings by brewery:", error);
+    res.status(500).json({ status: "Error", msg: "Internal server error" });
+  }
+};
+
+const favouriteBrewery = async (req, res) => {
+  try {
+    const brewery = await Brewery.findById(req.body.breweryid);
+
+    if (!brewery) {
+      return res.status(404).json({ error: "Brewery not found" });
+    }
+
+    const user = await User.findOne({ userNAME: req.body.username });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userProfile = await UserProfile.findOne({ userID: user._id });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User Profile not found" });
+    }
+
+    console.log(user);
+    console.log(brewery);
+    console.log(userProfile);
+
+    const userFave = new Favourite({
+      userID: user._id,
+      breweryID: brewery._id,
+    });
+
+    await userFave.save();
+
+    const response = await UserProfile.findOneAndUpdate(
+      { userID: user._id },
+      { $push: { favourite: userFave._id } }
+    );
+    console.log(response);
+
+    res.json({
+      status: "Success",
+      msg: "Brewery Favourited",
+    });
+  } catch (error) {
+    console.error("Error favoriting brewery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getBrewery,
   postBrewery,
@@ -254,4 +328,7 @@ module.exports = {
   addReview,
   getRating,
   getReview,
+  favouriteBrewery,
+  searchBreweryByName,
+  getAverageRating,
 };
