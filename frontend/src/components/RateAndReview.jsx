@@ -19,23 +19,26 @@ const RateAndReview = () => {
 
   useEffect(() => {
     fetchBreweries();
-    console.log("fetch breweries", breweries);
   }, []);
 
   // fetch brewery list
   const fetchBreweries = async () => {
-    const res = await fetchData(
-      "/api/brewery",
-      "GET",
-      undefined,
-      userCtx.accessToken
-    );
-    if (res.ok) {
-      setBreweries(res.data);
-      setLoading(false);
-    } else {
-      alert(JSON.stringify(res.data));
-      console.log(res.data);
+    try {
+      const res = await fetchData(
+        "/api/brewery",
+        "GET",
+        undefined,
+        userCtx.accessToken
+      );
+      if (res.ok) {
+        setBreweries(res.data);
+        setLoading(false);
+      } else {
+        alert(JSON.stringify(res.data));
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching breweries:", error);
     }
   };
 
@@ -43,21 +46,52 @@ const RateAndReview = () => {
     setSelectedBrewery(event.target.value);
   };
 
-  const handleRatingChange = (event) => {
-    setRating(event.target.value);
+  const handleRatingChange = (newValue) => {
+    setRating(newValue);
   };
 
   const handleReviewChange = (event) => {
     setReview(event.target.value);
   };
 
-  const handleSubmit = () => {
-    if (rating && review) {
-      // onSubmit({ rating, review }); --> create api endpoint to add rating & review
-      setRating(0);
-      setReview("");
-    } else {
-      alert("Please provide both rating and review.");
+  const handleSubmit = async () => {
+    try {
+      if (rating && review && selectedBrewery) {
+        const ratingData = {
+          score: rating.toString(),
+          breweryId: selectedBrewery,
+        };
+
+        const reviewData = {
+          review: review,
+          breweryId: selectedBrewery,
+        };
+
+        const ratingRes = await fetchData(
+          `/api/brewery/rating/${selectedBrewery}`,
+          "PUT",
+          ratingData,
+          userCtx.accessToken
+        );
+        const reviewRes = await fetchData(
+          `/api/brewery/review/${selectedBrewery}`,
+          "PUT",
+          reviewData,
+          userCtx.accessToken
+        );
+
+        if (ratingRes.ok && reviewRes.ok) {
+          alert("Rating and review added successfully.");
+          setRating(0);
+          setReview("");
+        } else {
+          alert("Failed to add rating and review.");
+        }
+      } else {
+        alert("Please provide both rating, review, and select a brewery.");
+      }
+    } catch (error) {
+      console.error("Error submitting rating and review:", error);
     }
   };
 
@@ -78,7 +112,14 @@ const RateAndReview = () => {
         Rate and Review
       </Typography>
       <Stack spacing={1}>
-        <Rating name="rating" defaultValue={2} precision={1} />
+        <Rating
+          name="rating"
+          value={rating}
+          precision={1}
+          onChange={(event, newValue) => {
+            handleRatingChange(newValue);
+          }}
+        />
       </Stack>
       <TextField
         select
@@ -93,29 +134,11 @@ const RateAndReview = () => {
       >
         <option value="" disabled></option>
         {breweries.map((brewery) => (
-          <option key={brewery._id} value={brewery.Name}>
+          <option key={brewery._id} value={brewery._id}>
             {brewery.Name}
           </option>
         ))}
       </TextField>
-      {/* Rating input field */}
-      {/* <TextField
-        select
-        fullWidth
-        label="Rating"
-        value={rating}
-        onChange={handleRatingChange}
-        SelectProps={{
-          native: true,
-        }}
-        sx={{ mb: 2 }}
-      >
-        {[...Array(5)].map((_, index) => (
-          <option key={index + 1} value={index + 1}>
-            {index + 1}
-          </option>
-        ))}
-      </TextField> */}
       <TextField
         fullWidth
         multiline

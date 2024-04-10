@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import DetailsModal from "./DetailsModal";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
@@ -27,6 +27,8 @@ const Search = (props) => {
       },
       userCtx.accessToken
     );
+
+    console.log("res", res);
 
     if (res.ok) {
       setBreweries(res.data);
