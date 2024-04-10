@@ -36,7 +36,7 @@ const brewerySchema = new Schema(
       required: false, // Assuming the website might not be available for all entries
     },
 
-    ratings: [
+    /* ratings: [
       {
         type: Schema.Types.ObjectId,
         ref: "Rating",
@@ -48,7 +48,7 @@ const brewerySchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Review",
       },
-    ],
+    ], */
   },
   {
     collection: "breweryList",

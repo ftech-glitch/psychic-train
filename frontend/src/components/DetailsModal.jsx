@@ -5,10 +5,10 @@ import UpdateForm from "./UpdateForm";
 import glass from "./glass.png";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import IconButton from '@mui/material/IconButton';
-import SnackbarMessage from './SnackbarMessage';
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import IconButton from "@mui/material/IconButton";
+import SnackbarMessage from "./SnackbarMessage";
 
 const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
@@ -26,7 +26,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
     Website: brewery.Website,
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // fetch brewery list
   const fetchBreweries = async () => {
@@ -59,6 +59,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
 
   // update brewery
   const handleSaveChanges = async (id, payload) => {
+    console.log("handleSaveChanges sending: ", payload);
     const res = await fetchData(
       `/api/brewery/${id}`,
       "PATCH",
@@ -177,10 +178,15 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const favouriteBrewery = async () => {
     try {
       const requestBody = {
-        "breweryid": brewery._id
-      }
+        breweryid: brewery._id,
+      };
 
-      const res = await fetchData("/auth/brewery/favourite", "PUT", requestBody, userCtx.accessToken);
+      const res = await fetchData(
+        "/auth/brewery/favourite",
+        "PUT",
+        requestBody,
+        userCtx.accessToken
+      );
 
       if (res.ok) {
         getUsersFavouriteBreweries();
@@ -193,12 +199,16 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
     } catch (error) {
       console.error("Error favouriting brewery: ", error.message);
     }
-  }
+  };
 
   const unfavouriteBrewery = async () => {
     try {
-
-      const res = await fetchData("/auth/brewery/favouriteS", "POST", { "breweryid": brewery._id }, userCtx.accessToken);
+      const res = await fetchData(
+        "/auth/brewery/favouriteS",
+        "POST",
+        { breweryid: brewery._id },
+        userCtx.accessToken
+      );
 
       if (res.ok) {
         getUsersFavouriteBreweries();
@@ -208,27 +218,31 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
         alert(JSON.stringify(res.data));
         console.log(res.data);
       }
-
     } catch (error) {
       console.error("Error unfavouriting brewery: ", error.message);
     }
-  }
+  };
 
   const getUsersFavouriteBreweries = async () => {
-    const userFaves = await fetchData("/auth/brewery/favourites", undefined, undefined, userCtx.accessToken);
+    const userFaves = await fetchData(
+      "/auth/brewery/favourites",
+      undefined,
+      undefined,
+      userCtx.accessToken
+    );
 
     if (userFaves.ok) {
       setFaves(userFaves.data.favourite);
     } else {
       alert(JSON.stringify(res.data));
     }
-  }
+  };
 
   useEffect(() => {
     if (userCtx.isSignedIn) {
       getUsersFavouriteBreweries();
     }
-  }, [userCtx.accessToken])
+  }, [userCtx.accessToken]);
 
   return (
     <div className={styles.backdrop}>
@@ -239,7 +253,8 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
           vertical="center"
           horizontal="center"
           setSnackbarOpen={setSnackbarOpen}
-          setSnackbarMessage={setSnackbarMessage}></SnackbarMessage>
+          setSnackbarMessage={setSnackbarMessage}
+        ></SnackbarMessage>
         {/* edit modal*/}
         {editMode ? (
           <UpdateForm
@@ -253,7 +268,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
         ) : (
           // details modal
           <div className="row align-items-center">
-
             <div className="row align-items-center">
               <div className="col-md-2 text-center">
                 <img src={glass} alt="glass" className="glass" />
@@ -267,19 +281,28 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
               <div className="col-md-1 text-center">
                 {!faves.includes(brewery._id) && (
                   <IconButton onClick={favouriteBrewery} aria-label="favourite">
-                    <StarBorderIcon sx={{
-                      color: "#278efc"
-                    }} />
+                    <StarBorderIcon
+                      sx={{
+                        color: "#278efc",
+                      }}
+                    />
                   </IconButton>
                 )}
                 {faves.includes(brewery._id) && (
-                  <IconButton onClick={unfavouriteBrewery} aria-label="favourite">
-                    <StarIcon sx={{
-                      color: "#278efc"
-                    }} />
+                  <IconButton
+                    onClick={unfavouriteBrewery}
+                    aria-label="favourite"
+                  >
+                    <StarIcon
+                      sx={{
+                        color: "#278efc",
+                      }}
+                    />
                   </IconButton>
                 )}
-                <p style={{ color: "#278efc", position: "absolute" }}>{snackbarMessage}</p>
+                <p style={{ color: "#278efc", position: "absolute" }}>
+                  {snackbarMessage}
+                </p>
               </div>
             </div>
             {renderName()}
@@ -304,7 +327,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
           </div>
         )}
       </div>
-    </div >
+    </div>
   );
 };
 
