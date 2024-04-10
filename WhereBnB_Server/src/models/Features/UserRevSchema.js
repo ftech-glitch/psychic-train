@@ -20,9 +20,15 @@ const userReviewSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Brewery",
       required: true,
-      index: true,
+    },
+    reviewID: {
+      type: String,
       unique: true,
-      sparse: true,
+      required: true,
+    },
+    review: {
+      type: String,
+      required: true,
     },
   },
   {

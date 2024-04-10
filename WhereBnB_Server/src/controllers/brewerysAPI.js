@@ -4,6 +4,7 @@ const Review = require("../models/Features/UserRevSchema");
 const User = require("../models/Authentications/UserSchema");
 const Favourite = require("../models/Features/UserFavSchema");
 const UserProfile = require("../models/Authentications/UserProfileSchema");
+const uuid = require("uuid");
 
 //Get Brewery from database
 const getBrewery = async (req, res) => {
@@ -11,18 +12,36 @@ const getBrewery = async (req, res) => {
   res.json(allBrewery);
 };
 
-// search for brewery by name
+// // search for brewery by name
+// const searchBreweryByName = async (req, res) => {
+//   try {
+//     const { name } = req.body;
+
+//     const breweries = await Brewery.find({
+//       Name: { $regex: name, $options: "i" },
+//     });
+
+//     res.json({ success: true, data: breweries });
+//   } catch (error) {
+//     console.error("error searching breweries by name:", error);
+//   }
+// };
+
 const searchBreweryByName = async (req, res) => {
   try {
     const { name } = req.body;
 
+    // Ensure that the name is a string before using it in the MongoDB query
+    const regexName = new RegExp(name, "i");
+
     const breweries = await Brewery.find({
-      Name: { $regex: name, $options: "i" },
+      Name: { $regex: regexName },
     });
 
     res.json({ success: true, data: breweries });
   } catch (error) {
     console.error("error searching breweries by name:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
 
@@ -155,11 +174,17 @@ const addRating = async (req, res) => {
         .json({ status: "Error", msg: "Brewery not found" });
     }
 
+    const reviewID = uuid.v4();
+
     const newRating = new Rating({
+      reviewID: reviewID,
       score: req.body.score,
       brewery: breweryId,
     });
     await newRating.save();
+
+    brewery.ratings.push(newRating._id);
+    await brewery.save();
 
     res.json({
       status: "Success",
@@ -187,14 +212,20 @@ const addReview = async (req, res) => {
       hour: "2-digit",
       minute: "2-digit",
     }); // Current time
+    const reviewID = uuid.v4();
 
     const newReview = new Review({
       // userID: req.body.userID,
+      reviewID: reviewID,
       reviewDATE: reviewDate,
       reviewTIME: reviewTime,
       brewery: breweryId,
+      review: req.body.review,
     });
     await newReview.save();
+
+    brewery.reviews.push(newReview);
+    await brewery.save();
 
     res.json({
       status: "Success",

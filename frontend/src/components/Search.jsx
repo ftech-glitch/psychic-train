@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import DetailsModal from "./DetailsModal";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
@@ -14,17 +14,21 @@ const Search = (props) => {
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
 
+  const nameRef = useRef("");
+
   // search for breweries by name
   const searchBreweries = async () => {
     setLoading(true);
     const res = await fetchData(
-      "/api/brewery/search",
+      "/api/brewery",
       "POST",
       {
-        name: input,
+        Name: nameRef.current.value,
       },
       userCtx.accessToken
     );
+
+    console.log("res", res);
 
     if (res.ok) {
       setBreweries(res.data);
