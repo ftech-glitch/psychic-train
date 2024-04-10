@@ -62,6 +62,25 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
     }
   };
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  // fetch brewery list
+  const fetchBreweries = async () => {
+    const res = await fetchData(
+      "/api/brewery",
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      setBreweries(res.data);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
   useEffect(() => {
     fetchRatingAndReviews();
   }, []);

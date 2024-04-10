@@ -14,25 +14,23 @@ const UserProfile = (props) => {
     const [profilePic, setProfilePic] = useState('');
     const [upload, setUpload] = useState(false);
 
+    const demuxProfileString = (imgString) => {
+        const parsed = imgString
+        return `data:${parsed.mimetype};base64,${parsed.base64}`;
+    }
+
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             setSelectedFile(file);
-
-            let reader = new FileReader();
-            reader.onload = function () {
-                setProfilePic(reader.result);
-            };
-            reader.readAsDataURL(file);
         }
     };
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const profileData = new FormData();
-        profileData.append('image', profilePic);
+        profileData.append('image', selectedFile);
 
         const profileRes = await fetch(import.meta.env.VITE_SERVER + "/auth/users/profile", {
             method: "POST",
@@ -45,11 +43,14 @@ const UserProfile = (props) => {
         if (!profileRes.ok) {
             throw new Error('Network response was not ok');
         } else {
-            userCtx.setUserProfile({ ...userCtx.userProfile, profile: profilePic });
+            // Reflect profile pic changes immediately after DB fetch
+            const resMsg = await profileRes.json()
+            const resImg = resMsg.imgChanged;
+            userCtx.setUserProfile({ ...userCtx.userProfile, profile: demuxProfileString(resImg) });
             props.snackbarOperations.setSnackbarMessage("Profile pic changed!")
             props.snackbarOperations.setSnackbarOpen(true);
-            setProfilePic('');
             setSelectedFile(null);
+            setUpload(false);
         }
     };
 

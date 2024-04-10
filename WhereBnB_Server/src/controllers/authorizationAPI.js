@@ -4,6 +4,8 @@ const { v4: uuidv4 } = require("uuid");
 const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
+const Brewery = require('../models/BrewerySchema');
+const Favourite = require("../models/Features/UserFavSchema");
 
 const extractToken = (req) => {
   const token = req.headers["authorization"].replace("Bearer ", "");
@@ -85,16 +87,12 @@ const updateUserProfile = async (req, res) => {
       return res.status(404).json({ status: "error", msg: "User not found." });
     }
 
-    const receivedBase64Message = req.body.image;
     const temp = {};
 
-
-    if (receivedBase64Message) {
-      // const receivedBase64Image = receivedBase64Message.replace(/^data:image\/\w+;base64,/, ''); // Remove that first part of the string
-
-      temp["profile"] = receivedBase64Message;
-      
-/* Conversion of the image will be done at the user side.
+    //     temp["profile"] = receivedBase64Message;
+    //   } else {
+    //     console.log("No image uploaded");
+    //   }
 
     if (req.file) {
       const imgBase64 = req.file.buffer.toString("base64");
@@ -117,43 +115,11 @@ const updateUserProfile = async (req, res) => {
         length: imgBase64.length,
       });
       //Debugging test
-      imagestring = JSON.parse(temp["profile"]);
-      console.log("req received", req);
-      
- Edited 
- */
-      
-      
+      /*       imagestring = JSON.parse(temp["profile"]);
+            console.log(imagestring); */
     } else {
       console.log("No image uploaded");
     }
-
-    // if (req.file) {
-    //   const imgBase64 = req.file.buffer.toString("base64");
-    //   const etaSize = EstImageSize(req.file.size);
-    //   if (etaSize != imgBase64.length) {
-    //     console.log(
-    //       `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize}`
-    //     );
-    //     res.status(500).json({
-    //       status: "error",
-    //       msg: `Error Converted Encoded Length :${imgBase64.length} are not matching ${etaSize} please try again`,
-    //     });
-    //   }
-    //   temp["profile"] = JSON.stringify({
-    //     fieldname: req.file.fieldname,
-    //     originalname: req.file.originalname,
-    //     encoding: req.file.encoding,
-    //     mimetype: req.file.mimetype,
-    //     base64: imgBase64,
-    //     length: imgBase64.length,
-    //   });
-    //   //Debugging test
-    //   /*       imagestring = JSON.parse(temp["profile"]);
-    //         console.log(imagestring); */
-    // } else {
-    //   console.log("No image uploaded");
-    // }
 
     const userDetailsPromises = users.map(async (user) => {
       console.log("find user _id", user._id);
@@ -170,6 +136,7 @@ const updateUserProfile = async (req, res) => {
       res.json({
         status: "ok",
         msg: "User Profile(s) have been updated.",
+        imgChanged: JSON.parse(temp.profile),
       });
   } catch (error) {
     console.error("Error updating user profile details:", error);
@@ -324,6 +291,117 @@ const refresh = (req, res) => {
   }
 };
 
+const favouriteBrewery = async (req, res) => {
+  try {
+    const decoded = extractToken(req);
+    const user = await User.findOne({ userNAME: decoded.username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userProfile = await Profile.findOne({ userID: user._id });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User Profile not found" });
+    }
+
+    const brewery = await Brewery.findById(req.body.breweryid);
+
+    if (!brewery) {
+      return res.status(404).json({ error: "Brewery not found" });
+    }
+
+    const userFave = new Favourite({
+      userID: user._id,
+      breweryID: brewery._id,
+    });
+
+    console.log(user._id, brewery._id)
+
+    await userFave.save();
+
+    const response = await Profile.findByIdAndUpdate(userProfile._id,
+      { $push: { favourite: brewery._id } }
+    );
+
+    res.json({
+      status: "Success",
+      msg: "Brewery Favourited",
+    });
+  } catch (error) {
+    console.error("Error favoriting brewery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const unfavouriteBrewery = async (req, res) => {
+  try {
+    const decoded = extractToken(req);
+    const user = await User.findOne({ userNAME: decoded.username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userProfile = await Profile.findOne({ userID: user._id });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: "User Profile not found" });
+    }
+
+    // De-reference Favourite entry fron User Profile collection
+    const updatedFavourites = [...userProfile.favourite].filter((item) => item != req.body.breweryid);
+    userProfile.favourite = updatedFavourites;
+
+    // const response = await Profile.findByIdAndUpdate(userProfile._id, userProfile);
+    const updatedProfile = await userProfile.save();
+
+    if (!updatedProfile) {
+      return res.status(404).json({ error: "Delete favourite record from UserProfile error" });
+    }
+
+    // Delete actual Favourite entry from favourite Collection
+    const favouriteEntry = await Favourite.findOne({ breweryID: req.body.breweryid });
+
+    if (!favouriteEntry) {
+      return res.status(404).json({ error: "Favourite not found." });
+    }
+
+    const deletedEntry = await Favourite.findByIdAndDelete(favouriteEntry._id);
+
+    res.json({
+      status: "Success",
+      msg: "Favourite removed",
+    });
+
+  } catch (error) {
+    console.error("Error unfavoriting brewery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getAllUserFavouriteBrewery = async (req, res) => {
+  try {
+    const decoded = extractToken(req);
+
+    const users = await User.findOne({ userNAME: decoded.username });
+    if (!users) {
+      return res.status(404).json({ status: "error", msg: "Are you logged in?" });
+    }
+
+    const allUserFavouriteBreweries = await Profile.findOne({ userID: users._id });
+
+    if (!allUserFavouriteBreweries) {
+      return res.status(404).json({ status: "error", msg: "No favourites found." });
+    }
+
+    res.json({
+      favourite: allUserFavouriteBreweries.favourite
+    });
+
+  } catch (error) {
+    console.error("Error getting favourite brewery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -333,4 +411,7 @@ module.exports = {
   deleteUser,
   updateUserProfile,
   getUserProfile,
+  getAllUserFavouriteBrewery,
+  favouriteBrewery,
+  unfavouriteBrewery
 };
