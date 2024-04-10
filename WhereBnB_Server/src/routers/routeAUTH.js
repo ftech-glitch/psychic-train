@@ -9,6 +9,9 @@ const {
   deleteUser,
   updateUserProfile,
   getUserProfile,
+  getAllUserFavouriteBrewery,
+  favouriteBrewery,
+  unfavouriteBrewery,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
 /* const {
@@ -38,6 +41,17 @@ router.post(
 //Get their own information
 router.get("/users/profile", authUser || authAdmin, getUserProfile);
 
+// Get Favourite
+router.get("/brewery/favourites", authUser || authAdmin, getAllUserFavouriteBrewery);
+
+// Favourite
+router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
+
+// Unfavourite
+router.post("/brewery/favourites", authUser || authAdmin, unfavouriteBrewery);
+
 //Bug delete have to be appearing at the last line.
 router.post("/users/:id", authAdmin, deleteUser);
+
+
 module.exports = router;
