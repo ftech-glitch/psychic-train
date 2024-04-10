@@ -106,8 +106,8 @@ const updateUserProfile = async (req, res) => {
         length: imgBase64.length,
       });
       //Debugging test
-/*       imagestring = JSON.parse(temp["profile"]);
-      console.log(imagestring); */
+      /*       imagestring = JSON.parse(temp["profile"]);*/
+      console.log("req received", req);
     } else {
       console.log("No image uploaded");
     }
