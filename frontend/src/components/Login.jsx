@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 import { jwtDecode } from "jwt-decode";
-
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -20,6 +19,11 @@ const Login = (props) => {
 
     const usernameRef = useRef('');
     const passwordRef = useRef('');
+
+    const demuxProfileString = (imgString) => {
+        const parsed = JSON.parse(imgString)
+        return `data:${parsed.mimetype};base64,${parsed.base64}`;
+    }
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -39,8 +43,7 @@ const Login = (props) => {
                 completeProfile.email = profile.data.userInfo.userEMAIL;
                 completeProfile.gender = profile.data.userInfo.userGENDER;
                 completeProfile.bio = profile.data.userProfile.bio ? profile.data.userProfile.bio : "";
-                completeProfile.profile = profile.data.userProfile.profile ? profile.data.userProfile.profile : "https://i.pravatar.cc/200";
-
+                completeProfile.profile = profile.data.userProfile.profile ? demuxProfileString(profile.data.userProfile.profile) : "https://i.pravatar.cc/200";
                 userCtx.setUserProfile(completeProfile);
             } else {
                 alert(JSON.stringify(profile.data));
