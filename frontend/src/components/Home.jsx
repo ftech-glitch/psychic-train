@@ -13,9 +13,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Sidebar from "./Sidebar";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
-import Search from "./Search";
-import RateAndReview from "./RateAndReview";
-import Add from "./Add";
 
 const Home = (props) => {
   const [randomBrewery, setRandomBrewery] = useState(null);
@@ -28,9 +25,6 @@ const Home = (props) => {
   const userCtx = useContext(UserContext);
   const [breweries, setBreweries] = useState([]);
   const fetchData = useFetch();
-  const [showReview, setShowReview] = useState(false);
-  const [showAdd, setShowAdd] = useState(false);
-  const location = useLocation();
 
   const navigate = useNavigate();
 
