@@ -28,6 +28,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [faves, setFaves] = useState([]);
 
   // fetch ratings and reviews
   const fetchRatingAndReviews = async () => {
@@ -220,7 +221,9 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
       );
 
       if (res.ok) {
-        console.log("WOOHOO");
+        getUsersFavouriteBreweries();
+        setSnackbarMessage("Brewery favourited!");
+        setSnackbarOpen(true);
       } else {
         alert(JSON.stringify(res.data));
         console.log(res.data);
@@ -371,14 +374,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                 <p style={{ color: "#278efc", position: "absolute" }}>
                   {snackbarMessage}
                 </p>
-
-                <IconButton onClick={favouriteBrewery} aria-label="favourite">
-                  <StarBorderIcon
-                    sx={{
-                      color: "black",
-                    }}
-                  />
-                </IconButton>
               </div>
             </div>
             {/* Render name, type, address, phone, and website */}
