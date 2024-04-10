@@ -28,7 +28,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [faves, setFaves] = useState([]);
 
   // fetch ratings and reviews
   const fetchRatingAndReviews = async () => {

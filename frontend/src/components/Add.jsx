@@ -71,6 +71,20 @@ const Add = () => {
       setFetchError("Please fill in all fields.");
       return;
     }
+
+    // validate postal code and contact
+    if (!/^\d+$/.test(postal)) {
+      setShowError(true);
+      setFetchError("Postal code must be a number.");
+      return;
+    }
+
+    if (!/^\d+$/.test(contact)) {
+      setShowError(true);
+      setFetchError("Contact must be a number.");
+      return;
+    }
+
     const res = await fetchData(
       "/api/brewery",
       "PUT",
