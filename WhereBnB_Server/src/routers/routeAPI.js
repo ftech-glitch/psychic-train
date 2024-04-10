@@ -44,7 +44,7 @@ router.put("/brewery", authAdmin, createBrewery);
 router.patch("/brewery/:id", authAdmin, patchBrewery);
 
 // Delete base on req.params.id
-router.delete("/brewery/:id", deleteBrewery);
+router.delete("/brewery/:id", authAdmin, deleteBrewery);
 
 // get ratings
 router.get("/brewery/rating/:id", getRating);

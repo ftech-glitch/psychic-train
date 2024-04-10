@@ -1,10 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import UserContext from "../context/user";
 import useFetch from "../hooks/useFetch";
-import Home from "./Home";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 const Add = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [fetchError, setFetchError] = useState("");
   const fetchData = useFetch();
   const userCtx = useContext(UserContext);
   const [breweries, setBreweries] = useState([]);
@@ -22,6 +25,10 @@ const Add = () => {
   // close alert message
   const handleCloseSuccess = () => {
     setShowSuccess(false);
+  };
+
+  const handleCloseError = () => {
+    setShowError(false);
   };
 
   // fetch brewery list when component mounts
@@ -50,6 +57,20 @@ const Add = () => {
   // add new brewery
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      !name ||
+      !type ||
+      !city ||
+      !province ||
+      !address ||
+      !postal ||
+      !contact ||
+      !website
+    ) {
+      setShowError(true);
+      setFetchError("Please fill in all fields.");
+      return;
+    }
     const res = await fetchData(
       "/api/brewery",
       "PUT",
@@ -72,6 +93,7 @@ const Add = () => {
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
+      setShowError(true);
     }
   };
 
@@ -182,14 +204,32 @@ const Add = () => {
         </div>
       </form>
       {/* alert message */}
-      {showSuccess && (
-        <div className="alert alert-success" role="alert">
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={6000}
+        onClose={handleCloseSuccess}
+      >
+        <MuiAlert
+          onClose={handleCloseSuccess}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           Form submitted successfully!
-          <button type="button" className="close" onClick={handleCloseSuccess}>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      )}
+        </MuiAlert>
+      </Snackbar>
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+      >
+        <MuiAlert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {fetchError}
+        </MuiAlert>
+      </Snackbar>
     </>
   );
 };

@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
@@ -14,6 +16,9 @@ const RateAndReview = () => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const userCtx = useContext(UserContext);
   const fetchData = useFetch();
 
@@ -34,11 +39,12 @@ const RateAndReview = () => {
         setBreweries(res.data);
         setLoading(false);
       } else {
-        alert(JSON.stringify(res.data));
+        showAlert(JSON.stringify(res.data), "error");
         console.log(res.data);
       }
     } catch (error) {
       console.error("Error fetching breweries:", error);
+      showAlert("Error fetching breweries. Please try again later.", "error");
     }
   };
 
@@ -81,18 +87,35 @@ const RateAndReview = () => {
         );
 
         if (ratingRes.ok && reviewRes.ok) {
-          alert("Rating and review added successfully.");
+          showAlert("Rating and review added successfully.", "success");
           setRating(0);
           setReview("");
         } else {
-          alert("Failed to add rating and review.");
+          showAlert("Failed to add rating and review.", "error");
         }
       } else {
-        alert("Please provide both rating, review, and select a brewery.");
+        showAlert(
+          "Please provide both rating, review, and select a brewery.",
+          "warning"
+        );
       }
     } catch (error) {
       console.error("Error submitting rating and review:", error);
+      showAlert(
+        "Error submitting rating and review. Please try again later.",
+        "error"
+      );
     }
+  };
+
+  const showAlert = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -151,6 +174,21 @@ const RateAndReview = () => {
       <Button variant="contained" color="primary" onClick={handleSubmit}>
         Submit
       </Button>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };
