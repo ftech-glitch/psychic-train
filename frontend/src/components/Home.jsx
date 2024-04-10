@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Details.module.css";
-import cheers from "./cheers.png";
+import cheers from "./cheers-fireworks.gif";
 import background_video01 from "../img/brewery_video01.mp4";
 import glass from "./glass.png";
 import Button from "@mui/material/Button";
@@ -189,7 +189,7 @@ const Home = (props) => {
                 <img
                   src={cheers}
                   alt="cheers"
-                  style={{ width: "200px", height: "200px" }}
+                  style={{ width: "300px", height: "200px" }}
                 />
               </Grid>
 
