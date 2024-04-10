@@ -1,18 +1,14 @@
-import React, { useContext } from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Typography, Container, Avatar, Grid, Button, FormControl, TextField } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Box, Typography, Avatar, Grid, Button, FormControl, TextField, CssBaseline, IconButton } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import UserContext from "../context/user";
-import { jwtDecode } from "jwt-decode";
-import { useState } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import IconButton from '@mui/material/IconButton';
-import Checkbox from '@mui/material/Checkbox';
-import useFetch from "../hooks/useFetch";
+import CancelIcon from '@mui/icons-material/Cancel';
+import UserContext from "../context/user";
+import Copyright from './Copyright';
+import SnackbarMessage from './SnackbarMessage';
 
 const UserProfile = (props) => {
-    const fetchData = useFetch();
     const userCtx = useContext(UserContext);
     const [selectedFile, setSelectedFile] = useState(null);
     const [profilePic, setProfilePic] = useState('');
@@ -26,49 +22,55 @@ const UserProfile = (props) => {
             let reader = new FileReader();
             reader.onload = function () {
                 setProfilePic(reader.result);
-                console.log(reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
 
-    const testHandleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const profileData = new FormData();
         profileData.append('image', profilePic);
 
-        const profileRes = await fetchData("/auth/users/profile", "POST", profileData, userCtx.accessToken);
-        // const profileRes = await fetch(import.meta.env.VITE_SERVER + "/auth/users/profile", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "multipart/form-data",
-        //         Authorization: "Bearer " + userCtx.accessToken,
-        //     },
-        //     body: profileData
-        // })
+        const profileRes = await fetch(import.meta.env.VITE_SERVER + "/auth/users/profile", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + userCtx.accessToken,
+            },
+            body: profileData
+        })
 
         if (!profileRes.ok) {
             throw new Error('Network response was not ok');
+        } else {
+            userCtx.setUserProfile({ ...userCtx.userProfile, profile: profilePic });
+            props.snackbarOperations.setSnackbarMessage("Profile pic changed!")
+            props.snackbarOperations.setSnackbarOpen(true);
+            setProfilePic('');
+            setSelectedFile(null);
         }
-
-        // const responseData = await profileRes.json();
-        console.log(JSON.stringify(profileRes));
-        // console.log("profile photo uploaded!");
-        // setProfilePic('');
-        // setSelectedFile(null);
-        // usernameRef.current.value = '';
-        // passwordRef.current.value = '';
-        // emailRef.current.value = '';
-        // bioRef.current.value = '';
     };
+
+    const handleCancel = (event) => {
+        event.preventDefault();
+
+        setUpload(false);
+    }
 
     return (
         // <Box sx={{ position: "absolute", top: 0, bottom: 0, right: 0, background: "#78A083" }}>
         <Box sx={{ background: "#78A083" }}>
             <ThemeProvider theme={props.theme}>
                 <CssBaseline />
+                <SnackbarMessage
+                    open={props.snackbarOperations.snackbarOpen}
+                    message={props.snackbarOperations.snackbarMessage}
+                    vertical="top"
+                    horizontal="right"
+                    setSnackbarOpen={props.snackbarOperations.setSnackbarOpen}
+                    setSnackbarMessage={props.snackbarOperations.setSnackbarMessage}></SnackbarMessage>
                 <Grid container spacing={4} component="main" maxWidth="xs" sx={{
                     marginTop: 8,
                     marginBottom: 8,
@@ -77,19 +79,21 @@ const UserProfile = (props) => {
                     alignItems: "center",
                 }}>
                     {/* Profile Photo */}
-                    <Grid item xs={12} sx={{ display: "grid", justifyContent: "center", alignItems: "center", marginBottom: 5 }}>
-                        <Avatar sx={{ bgcolor: 'white', width: 100, height: 100 }}>
-                            <img src="https://i.pravatar.cc/200"></img>
+                    <Grid sx={{ display: "grid", justifyContent: "center", alignItems: "center", marginBottom: 5 }}>
+                        <Avatar sx={{ bgcolor: "orange", width: 100, height: 100 }}>
+                            <img src={userCtx.userProfile.profile} width={"100px"} height={"100px"}></img>
                         </Avatar>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }} onClick={() => {
-                                setUpload(true);
-                            }}
-                        >
-                            Upload Profile Pic
-                        </Button>
+                        {!upload && (
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }} onClick={() => {
+                                    setUpload(true);
+                                }}
+                            >
+                                Change Profile Pic
+                            </Button>
+                        )}
 
                         {upload && (
                             <Box component="form" noValidate sx={{ mt: 3 }}>
@@ -112,9 +116,14 @@ const UserProfile = (props) => {
                                                 ),
                                             }}
                                         />
-                                        <Button variant="contained" color="primary" startIcon={<FileUploadIcon />} onClick={testHandleSubmit}>
-                                            Upload
-                                        </Button>
+                                        <Grid container gap={2} sx={{ margin: "1rem" }}>
+                                            <Button xs={6} variant="contained" color="primary" startIcon={<FileUploadIcon />} onClick={handleSubmit}>
+                                                Upload
+                                            </Button>
+                                            <Button xs={6} variant="contained" color="error" startIcon={<CancelIcon />} onClick={handleCancel}>
+                                                Cancel
+                                            </Button>
+                                        </Grid>
                                     </FormControl>
                                 </Grid>
                             </Box>
@@ -148,6 +157,8 @@ const UserProfile = (props) => {
                         Logout
                     </Button>
                 </Grid>
+
+                <Copyright theme={props.theme} />
 
             </ThemeProvider>
         </Box >
