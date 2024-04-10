@@ -19,12 +19,15 @@ const Search = (props) => {
   // search for breweries by name
   const searchBreweries = async () => {
     setLoading(true);
+    let search = {};
+    if (input.length != 0) {
+      search = { Name: input };
+    }
     const res = await fetchData(
-      "/api/brewery",
+      "/api/brewery/",
       "POST",
-      {
-        Name: nameRef.current.value,
-      },
+      search,
+
       userCtx.accessToken
     );
 
@@ -42,8 +45,8 @@ const Search = (props) => {
   };
 
   // search results
+  // sort breweries in alphabetical order
   const sortBreweries = breweries
-    // sort breweries in alphabetical order
     .sort(function (a, b) {
       if (a.Name < b.Name) {
         return -1;
@@ -105,7 +108,7 @@ const Search = (props) => {
       <main>
         {/* search bar */}
         <div className="search-bar-container">
-          <div className="input-group">
+          <div className="input-group" id="txtinput">
             <input
               type="text"
               value={input}

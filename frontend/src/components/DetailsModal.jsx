@@ -8,6 +8,8 @@ import UserContext from "../context/user";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import IconButton from "@mui/material/IconButton";
+import SnackbarMessage from "./SnackbarMessage";
+
 
 const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [editMode, setEditMode] = useState(false);
@@ -73,6 +75,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
       undefined,
       userCtx.accessToken
     );
+
     if (res.ok) {
       setBreweries(res.data);
     } else {
@@ -100,6 +103,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
 
   // update brewery
   const handleSaveChanges = async (id, payload) => {
+    console.log("handleSaveChanges sending: ", payload);
     const res = await fetchData(
       `/api/brewery/${id}`,
       "PATCH",
@@ -205,12 +209,11 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const favouriteBrewery = async () => {
     try {
       const requestBody = {
-        username: userCtx.userProfile.username,
         breweryid: brewery._id,
       };
 
       const res = await fetchData(
-        "/api/brewery/favourite",
+        "/auth/brewery/favourite",
         "PUT",
         requestBody,
         userCtx.accessToken
@@ -226,6 +229,50 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
       console.error("Error favouriting brewery: ", error.message);
     }
   };
+
+  const unfavouriteBrewery = async () => {
+    try {
+      const res = await fetchData(
+        "/auth/brewery/favouriteS",
+        "POST",
+        { breweryid: brewery._id },
+        userCtx.accessToken
+      );
+
+      if (res.ok) {
+        getUsersFavouriteBreweries();
+        setSnackbarMessage("Brewery unfavourited!");
+        setSnackbarOpen(true);
+      } else {
+        alert(JSON.stringify(res.data));
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.error("Error unfavouriting brewery: ", error.message);
+    }
+  };
+
+  const getUsersFavouriteBreweries = async () => {
+    const userFaves = await fetchData(
+      "/auth/brewery/favourites",
+      undefined,
+      undefined,
+      userCtx.accessToken
+    );
+
+    if (userFaves.ok) {
+      setFaves(userFaves.data.favourite);
+    } else {
+      alert(JSON.stringify(res.data));
+    }
+  };
+
+  useEffect(() => {
+    if (userCtx.isSignedIn) {
+      getUsersFavouriteBreweries();
+    }
+  }, [userCtx.accessToken]);
+  
 
   // render the average rating of brewery as stars
   const renderRatingStars = () => {
@@ -268,6 +315,15 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   return (
     <div className={styles.backdrop}>
       <div className={styles.modal}>
+        <SnackbarMessage
+          open={snackbarOpen}
+          message={snackbarMessage}
+          vertical="center"
+          horizontal="center"
+          setSnackbarOpen={setSnackbarOpen}
+          setSnackbarMessage={setSnackbarMessage}
+        ></SnackbarMessage>
+
         {/* edit modal*/}
         {editMode ? (
           <UpdateForm
@@ -292,6 +348,32 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                 <img src={glass} alt="glass" className="glass" />
               </div>
               <div className="col-md-1 text-center">
+
+                {!faves.includes(brewery._id) && (
+                  <IconButton onClick={favouriteBrewery} aria-label="favourite">
+                    <StarBorderIcon
+                      sx={{
+                        color: "#278efc",
+                      }}
+                    />
+                  </IconButton>
+                )}
+                {faves.includes(brewery._id) && (
+                  <IconButton
+                    onClick={unfavouriteBrewery}
+                    aria-label="favourite"
+                  >
+                    <StarIcon
+                      sx={{
+                        color: "#278efc",
+                      }}
+                    />
+                  </IconButton>
+                )}
+                <p style={{ color: "#278efc", position: "absolute" }}>
+                  {snackbarMessage}
+                </p>
+                
                 <IconButton onClick={favouriteBrewery} aria-label="favourite">
                   <StarBorderIcon
                     sx={{
@@ -299,6 +381,7 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                     }}
                   />
                 </IconButton>
+
               </div>
             </div>
             {/* Render name, type, address, phone, and website */}
