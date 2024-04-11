@@ -1,15 +1,15 @@
 // seed.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const connectDB = require("../connections/database"); // adjust the path as necessary
-const User = require("../models/Authentications/UserSchema"); // adjust the path as necessary
-const Auth = require("../models/Authentications/UserAuthSchema"); // adjust the path as necessary
-const Profile = require("../models/Authentications/UserProfileSchema"); // adjust the path as necessary
+const connectDB = require("../connections/database");
+const User = require("../models/Authentications/UserSchema");
+const Auth = require("../models/Authentications/UserAuthSchema");
+const Profile = require("../models/Authentications/UserProfileSchema");
 
 async function seedUser() {
   try {
     // Connect to the database
-    await connectDB("account"); // or your specific database name/path
+    await connectDB("account");
 
     // Create user data
     const userData = {

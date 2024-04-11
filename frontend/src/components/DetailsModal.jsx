@@ -28,6 +28,8 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // fetch ratings and reviews
   const fetchRatingAndReviews = async () => {
@@ -63,9 +65,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
       setLoading(false);
     }
   };
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // fetch brewery list
   const fetchBreweries = async () => {
@@ -103,16 +102,12 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
 
   // update brewery
   const handleSaveChanges = async (id, payload) => {
-    console.log("handleSaveChanges sending: ", payload);
     const res = await fetchData(
       `/api/brewery/${id}`,
       "PATCH",
       payload,
       userCtx.accessToken
     );
-
-    console.log("fetch edited brewery", res);
-    console.log("sending payload", payload);
 
     if (res.ok) {
       // update local state or trigger a refresh of brewery data
@@ -375,7 +370,6 @@ const OverLay = ({ setShowUpdateModal, brewery, setBreweries }) => {
                 </p>
               </div>
             </div>
-            {/* Render name, type, address, phone, and website */}
             {renderName()}
             {renderType()}
             {renderAddress()}

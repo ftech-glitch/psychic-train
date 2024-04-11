@@ -2,16 +2,8 @@ const mongoose = require("mongoose");
 
 const userAuthSchema = new mongoose.Schema(
   {
-    //userID are refer to User _id
-    /*     userID: {
-      // Primary key & Foreign Key
-      type: String,
-      ref: "User",
-      required: true,
-      unique: true,
-    }, */
     userID: {
-      type: mongoose.Schema.Types.ObjectId, // Instead of type: Number
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       unique: true,

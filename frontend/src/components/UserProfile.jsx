@@ -77,7 +77,6 @@ const UserProfile = (props) => {
   };
 
   return (
-    // <Box sx={{ position: "absolute", top: 0, bottom: 0, right: 0, background: "#78A083" }}>
     <Box sx={{ background: "#78A083" }}>
       <ThemeProvider theme={props.theme}>
         <CssBaseline />

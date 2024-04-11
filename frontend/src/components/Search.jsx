@@ -31,8 +31,6 @@ const Search = (props) => {
       userCtx.accessToken
     );
 
-    console.log("res", res);
-
     if (res.ok) {
       setBreweries(res.data);
     } else {
@@ -45,8 +43,8 @@ const Search = (props) => {
   };
 
   // search results
-  // sort breweries in alphabetical order
   const sortBreweries = breweries
+    // sort breweries in alphabetical order
     .sort(function (a, b) {
       if (a.Name < b.Name) {
         return -1;

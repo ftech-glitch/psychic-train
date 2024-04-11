@@ -9,8 +9,6 @@ const UpdateForm = ({
   editedBrewery,
   setEditedBrewery,
 }) => {
-  console.log("editedBrewery contain of :", editedBrewery);
-
   return (
     <div>
       <br />

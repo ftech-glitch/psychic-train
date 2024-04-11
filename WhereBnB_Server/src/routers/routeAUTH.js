@@ -14,12 +14,6 @@ const {
   unfavouriteBrewery,
 } = require("../controllers/authorizationAPI");
 const { authUser, authAdmin } = require("../middleware/authVerification");
-/* const {
-  validateRegistrationData,
-  validateLoginData,
-  validateRefreshToken,
-} = require("../validators/auth");
-const { errorCheck } = require("../validators/errorCheck"); */
 
 const router = express.Router();
 // Set up multer
@@ -42,7 +36,11 @@ router.post(
 router.get("/users/profile", authUser || authAdmin, getUserProfile);
 
 // Get Favourite
-router.get("/brewery/favourites", authUser || authAdmin, getAllUserFavouriteBrewery);
+router.get(
+  "/brewery/favourites",
+  authUser || authAdmin,
+  getAllUserFavouriteBrewery
+);
 
 // Favourite
 router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
@@ -52,6 +50,5 @@ router.post("/brewery/favourites", authUser || authAdmin, unfavouriteBrewery);
 
 //Bug delete have to be appearing at the last line.
 router.post("/users/:id", authAdmin, deleteUser);
-
 
 module.exports = router;
