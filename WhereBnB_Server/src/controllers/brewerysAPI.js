@@ -12,39 +12,6 @@ const getBrewery = async (req, res) => {
   res.json(allBrewery);
 };
 
-// // search for brewery by name
-// const searchBreweryByName = async (req, res) => {
-//   try {
-//     const { name } = req.body;
-
-//     const breweries = await Brewery.find({
-//       Name: { $regex: name, $options: "i" },
-//     });
-
-//     res.json({ success: true, data: breweries });
-//   } catch (error) {
-//     console.error("error searching breweries by name:", error);
-//   }
-// };
-
-/* const searchBreweryByName = async (req, res) => {
-  try {
-    const { name } = req.body;
-
-    // Ensure that the name is a string before using it in the MongoDB query
-    const regexName = new RegExp(name, "i");
-
-    const breweries = await Brewery.find({
-      Name: { $regex: regexName },
-    });
-
-    res.json({ success: true, data: breweries });
-  } catch (error) {
-    console.error("error searching breweries by name:", error);
-    res.status(500).json({ success: false, error: "Internal server error" });
-  }
-}; */
-
 //get Specific Brewery from database
 const postBrewery = async (req, res) => {
   const regexName = new RegExp(req.body.Name, "i");
@@ -56,17 +23,6 @@ const postBrewery = async (req, res) => {
 
 //create new Brewery and add into database
 const createBrewery = async (req, res) => {
-  // const BreweryExists = await Brewery.findOne({
-  //   Name: req.body.Name,
-  //   State: req.body.State,
-  //   City: req.body.City,
-  // });
-  // if (BreweryExists) {
-  //   return res
-  //     .status(400)
-  //     .json({ status: "error", msg: "duplicate Brewery exist" });
-  // }
-
   const createBrewery = new Brewery({
     Name: req.body.name,
     Type: req.body.type,
@@ -116,30 +72,6 @@ const patchBrewery = async (req, res) => {
     res.status(500).json({ status: "Error", msg: "Internal server error" });
   }
 };
-
-// const patchBrewery = async (req, res) => {
-//   const response = await Brewery.findByIdAndUpdate(
-//     req.params.id,
-//     {
-//       Name: req.body.name,
-//       Type: req.body.type,
-//       City: req.body.city,
-//       State: req.body.state,
-//       Address: req.body.address,
-//       Postal: req.body.postal,
-//       Contact: req.body.contact,
-//       Website: req.body.website,
-//     },
-
-//     res.json(patchBrewery)
-//   );
-// if (response.ok) {
-//   console.log("Successfully Update the Brewery From Databse");
-//   res.json({ status: "Success", msg: `Brewery Updated ${response}` });
-//   return;
-// };
-//   res.json({ status: "Unable to Update", msg: `Brewery Updated ${response}` });
-// };
 
 //Remove a Brewery from the Database base on id
 const deleteBrewery = async (req, res) => {

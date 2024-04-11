@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const Auth = require("../models/Authentications/UserAuthSchema");
 const Profile = require("../models/Authentications/UserProfileSchema");
 const User = require("../models/Authentications/UserSchema");
-const Brewery = require('../models/BrewerySchema');
+const Brewery = require("../models/BrewerySchema");
 const Favourite = require("../models/Features/UserFavSchema");
 
 const extractToken = (req) => {
@@ -89,11 +89,6 @@ const updateUserProfile = async (req, res) => {
 
     const temp = {};
 
-    //     temp["profile"] = receivedBase64Message;
-    //   } else {
-    //     console.log("No image uploaded");
-    //   }
-
     if (req.file) {
       const imgBase64 = req.file.buffer.toString("base64");
       const etaSize = EstImageSize(req.file.size);
@@ -114,9 +109,6 @@ const updateUserProfile = async (req, res) => {
         base64: imgBase64,
         length: imgBase64.length,
       });
-      //Debugging test
-      /*       imagestring = JSON.parse(temp["profile"]);
-            console.log(imagestring); */
     } else {
       console.log("No image uploaded");
     }
@@ -156,10 +148,8 @@ const register = async (req, res) => {
         .json({ status: "error", msg: "duplicate username" });
     }
 
-    /*     const newUserId = (await User.countDocuments()) + 1; */
     // Create the user without manually setting _id
     const newUser = await User.create({
-      /*   _id: newUserId, */
       userNAME: req.body.username,
       userEMAIL: req.body.email,
       userGENDER: req.body.gender,
@@ -315,13 +305,13 @@ const favouriteBrewery = async (req, res) => {
       breweryID: brewery._id,
     });
 
-    console.log(user._id, brewery._id)
+    console.log(user._id, brewery._id);
 
     await userFave.save();
 
-    const response = await Profile.findByIdAndUpdate(userProfile._id,
-      { $push: { favourite: brewery._id } }
-    );
+    const response = await Profile.findByIdAndUpdate(userProfile._id, {
+      $push: { favourite: brewery._id },
+    });
 
     res.json({
       status: "Success",
@@ -347,18 +337,24 @@ const unfavouriteBrewery = async (req, res) => {
     }
 
     // De-reference Favourite entry fron User Profile collection
-    const updatedFavourites = [...userProfile.favourite].filter((item) => item != req.body.breweryid);
+    const updatedFavourites = [...userProfile.favourite].filter(
+      (item) => item != req.body.breweryid
+    );
     userProfile.favourite = updatedFavourites;
 
     // const response = await Profile.findByIdAndUpdate(userProfile._id, userProfile);
     const updatedProfile = await userProfile.save();
 
     if (!updatedProfile) {
-      return res.status(404).json({ error: "Delete favourite record from UserProfile error" });
+      return res
+        .status(404)
+        .json({ error: "Delete favourite record from UserProfile error" });
     }
 
     // Delete actual Favourite entry from favourite Collection
-    const favouriteEntry = await Favourite.findOne({ breweryID: req.body.breweryid });
+    const favouriteEntry = await Favourite.findOne({
+      breweryID: req.body.breweryid,
+    });
 
     if (!favouriteEntry) {
       return res.status(404).json({ error: "Favourite not found." });
@@ -370,7 +366,6 @@ const unfavouriteBrewery = async (req, res) => {
       status: "Success",
       msg: "Favourite removed",
     });
-
   } catch (error) {
     console.error("Error unfavoriting brewery:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -383,24 +378,29 @@ const getAllUserFavouriteBrewery = async (req, res) => {
 
     const users = await User.findOne({ userNAME: decoded.username });
     if (!users) {
-      return res.status(404).json({ status: "error", msg: "Are you logged in?" });
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Are you logged in?" });
     }
 
-    const allUserFavouriteBreweries = await Profile.findOne({ userID: users._id });
+    const allUserFavouriteBreweries = await Profile.findOne({
+      userID: users._id,
+    });
 
     if (!allUserFavouriteBreweries) {
-      return res.status(404).json({ status: "error", msg: "No favourites found." });
+      return res
+        .status(404)
+        .json({ status: "error", msg: "No favourites found." });
     }
 
     res.json({
-      favourite: allUserFavouriteBreweries.favourite
+      favourite: allUserFavouriteBreweries.favourite,
     });
-
   } catch (error) {
     console.error("Error getting favourite brewery:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 module.exports = {
   register,
@@ -413,5 +413,5 @@ module.exports = {
   getUserProfile,
   getAllUserFavouriteBrewery,
   favouriteBrewery,
-  unfavouriteBrewery
+  unfavouriteBrewery,
 };

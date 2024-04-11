@@ -22,7 +22,6 @@ const brewerySeed = [
     contact: 9876543210,
     website: "https://www.brewerytwo.com",
   },
-  // Add as many objects as you need
 ];
 
 const seedDB = async () => {

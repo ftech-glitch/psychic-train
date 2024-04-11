@@ -141,19 +141,8 @@ const Home = (props) => {
     return <p className="modal-text">Website: -</p>;
   };
 
-  // useEffect(() => {
-  //   if (location.pathname === "/add") {
-  //     setShowAdd(true);
-  //     setShowReview(false);
-  //   } else {
-  //     setShowReview(false);
-  //     setShowAdd(false);
-  //   }
-  // }, [location]);
-
   return (
     <>
-      {/* {showAdd && <Add fetchBreweries={fetchBreweries} />} */}
       <ThemeProvider theme={darkTheme}>
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />

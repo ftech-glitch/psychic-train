@@ -19,10 +19,11 @@ function App() {
 
   useEffect(() => {
     accessToken.length !== 0 ? setIsSignedIn(true) : setIsSignedIn(false);
-  }, [accessToken.length])
+  }, [accessToken.length]);
 
-  /*
-        <UserContext.Provider
+  return (
+    <>
+      <UserContext.Provider
         value={{
           accessToken,
           setAccessToken,
@@ -30,27 +31,44 @@ function App() {
           setRole,
           userProfile,
           setUserProfile,
+          isSignedIn,
+          setIsSignedIn,
         }}
       >
-   */
-
-  return (
-    <>
-
-      <UserContext.Provider value={{ accessToken, setAccessToken, role, setRole, userProfile, setUserProfile, isSignedIn, setIsSignedIn }}>
         <NavBar></NavBar>
         {accessToken.length > 0 && (
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="add" element={<Add accessTokenLength={accessToken.length}
-              showLogin={showLogin}
-              setShowLogin={setShowLogin} />} />
-            <Route path="search" element={<Search accessTokenLength={accessToken.length}
-              showLogin={showLogin}
-              setShowLogin={setShowLogin} />} />
-            <Route path="review" element={<RateAndReview accessTokenLength={accessToken.length}
-              showLogin={showLogin}
-              setShowLogin={setShowLogin} />} />
+            <Route
+              path="add"
+              element={
+                <Add
+                  accessTokenLength={accessToken.length}
+                  showLogin={showLogin}
+                  setShowLogin={setShowLogin}
+                />
+              }
+            />
+            <Route
+              path="search"
+              element={
+                <Search
+                  accessTokenLength={accessToken.length}
+                  showLogin={showLogin}
+                  setShowLogin={setShowLogin}
+                />
+              }
+            />
+            <Route
+              path="review"
+              element={
+                <RateAndReview
+                  accessTokenLength={accessToken.length}
+                  showLogin={showLogin}
+                  setShowLogin={setShowLogin}
+                />
+              }
+            />
           </Routes>
         )}
         {!accessToken && ( // Render Home only if user is not logged in
