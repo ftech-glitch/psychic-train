@@ -3,11 +3,6 @@ const Schema = mongoose.Schema;
 
 const userReviewSchema = new Schema(
   {
-    // userID: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    //   required: true,
-    // },
     reviewDATE: {
       type: String,
       required: true,

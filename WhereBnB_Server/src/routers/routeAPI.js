@@ -20,9 +20,6 @@ const { authUser, authAdmin } = require("../middleware/authVerification");
 // get brewery list
 router.get("/brewery", getBrewery);
 
-/* // search brewery by name
-router.post("/brewery/search", searchBreweryByName); */
-
 //Lookup for specific Brewery send a raw body {"type":"Large"} or {"city":""}
 router.post("/brewery", authUser, postBrewery);
 
@@ -63,6 +60,6 @@ router.put("/brewery/review/:id", addReview);
 router.get("/brewery/averagerating/:id", getAverageRating);
 
 // Favourite
-router.put("/brewery/favourite", authUser || authAdmin, favouriteBrewery);
+router.put("/brewery/favourite", authUser, favouriteBrewery);
 
 module.exports = router;
